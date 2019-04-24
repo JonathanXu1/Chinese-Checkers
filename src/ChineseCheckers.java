@@ -53,42 +53,11 @@ public class ChineseCheckers {
   // TESTING FUNCTION
   // 
   private static void printGrid() {
-    System.out.println("____________________________"); 
-
-  }
-
-  public ArrayList<int[]> nextAvailableMoves (int r1, int c1, int[][] board){
-    ArrayList<int[]> moves = new ArrayList<>();
-    int[] move = new int[2];
-    // Checks adjacent moves and jump moves
-    for(int i = -1; i <= 1; i++){
-      for(int j = -1; j <= 1; j++){
-        if(r1+i >= 9 && r1+i <= 25 && c1+j >= 1 && c1+j <= 17){ // If in board
-          if(board[r1+i][c1+j] == 0){ // If adjacent is empty
-            move = {r1+i, c1+j};
-            moves.add(move);
-          } else if(i != 0 && j != 0){
-            if(r1+2i >= 9 && r1+2i <= 25 && c1+2j >= 1 && c1+2j <= 17){ // If in board
-              if(board[r1+2i][c1+2j] == 0) { // If jump is empty
-                move = {r1+2i, c1+2j};
-                moves.add(move);
-              }
-            }
-          }
-        }
-      }
-    }
-
-    return moves;
-
-  }
-
-  public int checkAdjacent(int r, int c){
-    return 0;
+    System.out.println("____________________________");
     int rowNum = 0;
     for (int[] row: board) {
-      int characters = -12; 
-      String lineToPrint = ""; 
+      int characters = -12;
+      String lineToPrint = "";
       rowNum++;
       if (rowNum < 10) {
         continue;
@@ -99,7 +68,7 @@ public class ChineseCheckers {
       }
       for (int item: row) {
         if (item == -1) {
-          lineToPrint += "__"; 
+          lineToPrint += "__";
           characters += 2;
         } else if (item == 0) {
           lineToPrint += item + " ";
@@ -117,8 +86,35 @@ public class ChineseCheckers {
       }
       System.out.println(lineToPrint);
     }
-    System.out.println("____________________________"); 
+    System.out.println("____________________________");
   }
+
+  public ArrayList<int[]> nextAvailableMoves (int r1, int c1, int[][] board){
+    ArrayList<int[]> moves = new ArrayList<>();
+    int[] move;
+    // Checks adjacent moves and jump moves
+    for(int i = -1; i <= 1; i++){
+      for(int j = -1; j <= 1; j++){
+        if(r1+i >= 9 && r1+i <= 25 && c1+j >= 1 && c1+j <= 17){ // If in board
+          if(board[r1+i][c1+j] == 0){ // If adjacent is empty
+            move = new int[]{r1+i, c1+j};
+            moves.add(move);
+          } else if(i != 0 && j != 0){
+            if(r1+2*i >= 9 && r1+2*i <= 25 && c1+2*j >= 1 && c1+2*j <= 17){ // If in board
+              if(board[r1+2*i][c1+2*j] == 0) { // If jump is empty
+                move = new int[]{r1+2*i, c1+2*j};
+                moves.add(move);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return moves;
+
+  }
+
 }
 
 

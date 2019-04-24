@@ -56,6 +56,7 @@ public class ChineseCheckers {
 
     int rowNum = 0; 
     for (int[] row: board) {
+      int characters = -12; 
       String lineToPrint = ""; 
       rowNum++;
       if (rowNum < 10) {
@@ -63,16 +64,27 @@ public class ChineseCheckers {
       }
       for (int i = 0; i < 26-rowNum; i++) {
         lineToPrint += "_";
+        characters++;
       }
       for (int item: row) {
         if (item == -1) {
           lineToPrint += "__"; 
-        } else {
+          characters += 2;
+        } else if (item == 0) {
           lineToPrint += item + " ";
+          characters += 2;
+        } else {
+          lineToPrint += "\033[0;3" + item + "m";
+          lineToPrint += item + " ";
+          characters += 2;
+          lineToPrint += "\033[0m";
         }
       }
-      lineToPrint += "__________________";
-      System.out.println(lineToPrint.substring(13, 41)); 
+      lineToPrint = lineToPrint.substring(12);
+      for (int i = 0; i < 40 - characters; i++) {
+        lineToPrint += "_";
+      }
+      System.out.println(lineToPrint);
     }
     System.out.println("____________________________"); 
   }

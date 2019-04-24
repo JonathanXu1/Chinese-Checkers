@@ -7,6 +7,20 @@ public class ChineseCheckers {
   public static void main(String[] args) {
     readGrid("BOARD 6 0 (14, 8) (15, 5) (17, 7) (19, 14) (20, 6) (22, 12)");
     printGrid();
+
+    // Harcoding the boundaries
+    for(int i = 0; i < 26; i++){
+      for(int j = 0; j < 16; j++ ){
+        // Check 1st triangle (points up)
+        if(i >= 9 && i <= 21 && j >=5 && j <= i-4){
+          board[i][j] = 0;
+        } else if(i >= 13 && i <= 25 && j>= i-12 && j <= 13 ){ // Check 2nd triangle
+          board[i][j] = 0;
+        } else {
+          board[i][j] = -1;
+        }
+      }
+    }
   }
 
 
@@ -40,6 +54,7 @@ public class ChineseCheckers {
       }
       System.out.println(); 
     }
+
   }
 }
 

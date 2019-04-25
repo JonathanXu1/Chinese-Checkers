@@ -19,7 +19,6 @@ public class ChineseCheckers {
   }
 
 
-
   private static void readGrid(String boardMessage) {
     String[] boardInfo = boardMessage.split("\\s*[)] [(]|[)]|[(]\\s*"); 
     int playersRemaining = Integer.parseInt(boardInfo[0].split(" ")[1]); 
@@ -31,6 +30,7 @@ public class ChineseCheckers {
       int row = Integer.parseInt(piece.split(", ")[0]);
       int col = Integer.parseInt(piece.split(", ")[1]);
       board[row][col] = (piecesProcessed / 10) + 1; 
+      piecesProcessed++;
     }
   }
 
@@ -110,7 +110,6 @@ public class ChineseCheckers {
         }
       }
     }
-
     return moves;
 
   }

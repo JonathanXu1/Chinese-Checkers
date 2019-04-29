@@ -44,9 +44,9 @@ public class Client {
         }
 
         while (running) {
-            String msg = getServerMessage();
+            String msg = getServerMessage().trim();
             if (msg.contains("BOARD")) {
-
+                ChineseCheckers.readGrid(msg);
             }
         }
 
@@ -59,7 +59,7 @@ public class Client {
         }
     }
 
-    public boolean enterRoom () {
+    private boolean enterRoom () {
         Scanner sc = new Scanner(System.in);
         System.out.println ("What's the name of the room you want to join?");
         String roomName = sc.next();
@@ -73,7 +73,7 @@ public class Client {
         return true;
     }
 
-    public boolean chooseName () {
+    private boolean chooseName () {
         Scanner sc = new Scanner(System.in);
         System.out.println ("What's your name?");
         String name = sc.next();
@@ -100,5 +100,14 @@ public class Client {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void sendMove (String move) {
+        output.println(move);
+        output.flush();
+    }
+
+    public void setRunning (boolean running) {
+        this.running = running;
     }
 }

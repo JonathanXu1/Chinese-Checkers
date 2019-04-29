@@ -9,7 +9,9 @@ import java.util.Arrays;
 */
 public class ChineseCheckers {
   static int NUM_PLAYERS = 6; 
-  static int[][] board  = new int[26][18]; 
+  static int[][] board  = new int[26][18];
+  static int moves = 0;
+  // TODO: Implement move count tracking
 
   public static void main(String[] args) {
     initGrid();
@@ -17,8 +19,6 @@ public class ChineseCheckers {
     printGrid();
 
   }
-
-
 
   private static void readGrid(String boardMessage) {
     String[] boardInfo = boardMessage.split("\\s*[)] [(]|[)]|[(]\\s*"); 
@@ -47,6 +47,49 @@ public class ChineseCheckers {
         }
       }
     }
+  }
+
+  private static void rotateGrid(int rotations){
+    // Currently will stay blank as we're not sure if the server group will rotate for us
+
+    //Each rotation is 60 degrees clockwise
+    int[][] tempBoard = new int[26][18];
+    for(int i = 0; i < rotations; i++){
+
+    }
+  }
+
+  private static int boardScore(){
+    int score = 0;
+    // Iterate through all friendly pieces
+    for(int i = 0; i < 26; i++){
+      for(int j = 0; j < 18; j++){
+        // Checks for nearby friendly pieces
+        int nearbyPieces = 0;
+        for(int v = -1; v <=1; v++){
+          for(int h = -1; h <=1; h++){
+            if(i+v >= 9 && i+v <= 25 && j+h >= 1 && j+h <= 17) { // If in board
+              if((v != 0 || h != 0) && board[i+v][j+h] == 1){ // If friendly
+                nearbyPieces ++;
+              }
+            }
+          }
+        }
+        // Finds distance from end
+        // TODO: Create method to find distance from end
+        // Being close to friendlies should be scored higher when the piece is closer to the end
+        score += (10 - 5 * nearbyPieces);
+        // TODO: Replace 10 with total distance from start to end, 5 with shortest distance to end
+      }
+    }
+
+    // Add # of pieces already at end
+
+    // Subtract turns taken
+    score -= moves;
+    // TODO: Get suitable multiplier for moves score reduction
+
+    return score;
   }
 
   // 
@@ -99,7 +142,7 @@ public class ChineseCheckers {
           if(board[r1+i][c1+j] == 0){ // If adjacent is empty
             move = new int[]{r1+i, c1+j};
             moves.add(move);
-          } else if(i != 0 && j != 0){
+          } else if(i != 0 || j != 0){
             if(r1+2*i >= 9 && r1+2*i <= 25 && c1+2*j >= 1 && c1+2*j <= 17){ // If in board
               if(board[r1+2*i][c1+2*j] == 0) { // If jump is empty
                 move = new int[]{r1+2*i, c1+2*j};

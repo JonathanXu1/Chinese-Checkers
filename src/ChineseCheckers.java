@@ -4,11 +4,11 @@ import java.util.Arrays;
 /**
 * This class is responsible for playing the game
 *
-* @author  
+* @author
 * @since   2019-04-24
 */
 public class ChineseCheckers {
-  static int NUM_PLAYERS = 6; 
+  static int NUM_PLAYERS = 6;
   static int[][] board  = new int[26][18];
   static int moves = 0;
   // TODO: Implement move count tracking
@@ -18,19 +18,23 @@ public class ChineseCheckers {
     readGrid("BOARD 6 0 (14, 8) (15, 5) (17, 7) (19, 14) (20, 6) (22, 12)");
     printGrid();
 
+    Client client = new Client(); //start the client
+    client.go(); //begin the connection
   }
 
-  private static void readGrid(String boardMessage) {
-    String[] boardInfo = boardMessage.split("\\s*[)] [(]|[)]|[(]\\s*"); 
-    int playersRemaining = Integer.parseInt(boardInfo[0].split(" ")[1]); 
 
-    int piecesProcessed = 0; 
+
+  public static void readGrid(String boardMessage) {
+    String[] boardInfo = boardMessage.split("\\s*[)] [(]|[)]|[(]\\s*");
+    int playersRemaining = Integer.parseInt(boardInfo[0].split(" ")[1]);
+    int piecesProcessed = 0;
 
     String[] pieces = Arrays.copyOfRange(boardInfo, 1, boardInfo.length);
     for (String piece: pieces) {
       int row = Integer.parseInt(piece.split(", ")[0]);
       int col = Integer.parseInt(piece.split(", ")[1]);
-      board[row][col] = (piecesProcessed / 10) + 1; 
+      board[row][col] = (piecesProcessed / 10) + 1;
+      piecesProcessed++;
     }
   }
 
@@ -93,9 +97,9 @@ public class ChineseCheckers {
     return score;
   }
 
-  // 
+  //
   // TESTING FUNCTION
-  // 
+  //
   private static void printGrid() {
     System.out.println("____________________________");
     int rowNum = 0;
@@ -154,11 +158,9 @@ public class ChineseCheckers {
         }
       }
     }
-
     return moves;
 
   }
 
 }
-
 

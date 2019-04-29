@@ -5,6 +5,13 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
+/**
+ * This class is responsible for IO with server
+ *
+ * @Author
+ * @Since 2019-04-29
+ */
+
 public class Client {
     private Socket mySocket; //socket for connection
     private BufferedReader input; //reader for network stream
@@ -20,7 +27,7 @@ public class Client {
         System.out.println("Attempting to make a connection..");
 
         try {
-            mySocket = new Socket("10.242.161.220",5530); //attempt socket connection (local address). This will wait until a connection is made
+            mySocket = new Socket("10.242.161.220",6666); //attempt socket connection (local address). This will wait until a connection is made
 
             InputStreamReader stream1= new InputStreamReader(mySocket.getInputStream()); //Stream for network input
             input = new BufferedReader(stream1);

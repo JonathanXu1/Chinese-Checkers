@@ -6,10 +6,10 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class Client {
-    Socket mySocket; //socket for connection
-    BufferedReader input; //reader for network stream
-    PrintWriter output;  //printwriter for network output
-    boolean running = true; //thread status via boolean
+    private Socket mySocket; //socket for connection
+    private BufferedReader input; //reader for network stream
+    private PrintWriter output;  //printwriter for network output
+    private boolean running = true; //thread status via boolean
 
     /** Go
      * Starts the client

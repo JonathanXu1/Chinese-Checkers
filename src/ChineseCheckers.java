@@ -1,7 +1,3 @@
-//imports for network communication
-import java.io.*;
-import java.net.*;
-
 public class ChineseCheckers {
 
 

@@ -59,7 +59,7 @@ public class ChineseCheckers {
     }
   }
 
-  private static int boardScore(){
+  private static int getScore(){
     int score = 0;
     // Iterate through all friendly pieces
     for(int i = 0; i < 26; i++){
@@ -76,10 +76,11 @@ public class ChineseCheckers {
           }
         }
         // Finds distance from end
-        // TODO: Create method to find distance from end
+        int distanceFromEnd = 10;
+        // TODO: Calculate shortest path including diagonals. Also find final position relative to starting position.
         // Being close to friendlies should be scored higher when the piece is closer to the end
-        score += (10 - 5 * nearbyPieces);
-        // TODO: Replace 10 with total distance from start to end, 5 with shortest distance to end
+        score += (10 - distanceFromEnd * nearbyPieces);
+        // TODO: Replace 10 with total distance from start to end or something larger
       }
     }
 

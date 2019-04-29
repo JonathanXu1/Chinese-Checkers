@@ -13,5 +13,4 @@ public class ChineseCheckers {
     client.go(); //begin the connection
   }
 
-
 }

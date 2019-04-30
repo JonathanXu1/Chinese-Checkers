@@ -23,11 +23,13 @@ public class ChineseCheckers {
     printGrid(board);
 
     System.out.println("Score: " + getScore(friendlyPieces));
-    findBestMove(0, board, friendlyPieces);
-    move (board, friendlyPieces, currentBestMove);
-    printGrid(board);
-    System.out.println("Score: " + getScore(friendlyPieces));
-    moves++;
+    for (int i = 0; i < 10; i++) {
+      findBestMove(0, board, friendlyPieces);
+      move(board, friendlyPieces, currentBestMove);
+      printGrid(board);
+      System.out.println("Score: " + getScore(friendlyPieces));
+      moves++;
+    }
     //Client client = new Client(); //start the client
     ///client.go(); //begin the connection
   }
@@ -146,7 +148,7 @@ public class ChineseCheckers {
   public static ArrayList<int[]> nextAvailableMoves (int r1, int c1, int[][] board){
     ArrayList<int[]> moves = new ArrayList<>();
     int[] move;
-    System.out.print("\n" + r1 + " " + c1 + ": ");
+    //System.out.print(r1 + " " + c1 + ": ");
     // Checks adjacent moves and jump moves
     for(int i = -1; i <= 1; i++){
       for(int j = -1; j <= 1; j++){
@@ -154,24 +156,25 @@ public class ChineseCheckers {
           if(board[r1+i][c1+j] == 0){ // If adjacent is empty
             move = new int[]{r1+i, c1+j};
             moves.add(move);
-            System.out.print(move[0] + " " + move[1] + " | ");
+            //System.out.print(move[0] + " " + move[1] + " | ");
           } else if(i != 0 || j != 0){
             if(r1+2*i >= 9 && r1+2*i <= 25 && c1+2*j >= 1 && c1+2*j <= 17){ // If in board
               if(board[r1+2*i][c1+2*j] == 0) { // If jump is empty
                 move = new int[]{r1+2*i, c1+2*j};
                 moves.add(move);
-                System.out.print(move[0] + " " + move[1] + " | ");
+                //System.out.print(move[0] + " " + move[1] + " | ");
               }
             }
           }
         }
       }
     }
+    //System.out.println("");
     return moves;
   }
 
   public static int findBestMove (int depth, int[][] board, int[][] friendlyPieces) {
-    if (depth >= 2) {
+    if (depth >= 4) {
       return getScore(friendlyPieces);
     }
     int[][] tempFriendlyPieces = copyArray(friendlyPieces);
@@ -187,12 +190,12 @@ public class ChineseCheckers {
         tempFriendlyPieces[i] = move;
         int val = findBestMove(depth + 1, tempBoard, tempFriendlyPieces);
         maxVal = Math.max(maxVal, val);
-        if (maxVal == val) {
+        if (maxVal == val && depth == 0) {
           currentBestMove[0][0] = piece[0];
           currentBestMove[0][1] = piece[1];
           currentBestMove[1][0] = move[0];
           currentBestMove[1][1] = move[1];
-          //System.out.println(maxVal + " " + currentBestMove[0][0] + " " + currentBestMove[0][1] + " " + currentBestMove[1][0] + " " + currentBestMove[1][1]);
+          System.out.println(depth + " " + maxVal + " " + currentBestMove[0][0] + " " + currentBestMove[0][1] + " " + currentBestMove[1][0] + " " + currentBestMove[1][1]);
           //printGrid(tempBoard);
         }
       }
@@ -202,8 +205,14 @@ public class ChineseCheckers {
 
   private static void move (int[][] board, int[][] friendlyPieces, int[][] move) {
     System.out.println(move[0][0] + " " + move[0][1] + " " + move[1][0] + " " + move[1][1]);
-    board[move[1][1]][move[1][1]] = board[move[0][0]][move[0][1]];
+    board[move[1][0]][move[1][1]] = board[move[0][0]][move[0][1]];
     board[move[0][0]][move[0][1]] = 0;
+    for (int[] piece: friendlyPieces) {
+      if (piece[0] == move[0][0] && piece[1] == move[0][1]) {
+        piece[0] = move[1][0];
+        piece[1] = move[1][1];
+      }
+    }
   }
 
   private static int[][] copyArray (int[][] board) {

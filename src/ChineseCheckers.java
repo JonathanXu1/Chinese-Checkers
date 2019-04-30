@@ -159,7 +159,32 @@ public class ChineseCheckers {
       }
     }
     return moves;
+  }
 
+  public int findBestMove (int depth, int[][] board, int[][] friendlyPieces) {
+    if (depth >= 3) {
+      return getScore();
+    }
+    int[][] tempFriendlyPieces = friendlyPieces.clone();
+    int maxVal = -(1<<30);
+    int[] bestMove = new int[4];
+    for (int[] piece: tempFriendlyPieces) {
+      ArrayList<int[]> possibleMoves = nextAvailableMoves(piece[0], piece[1], board);
+      for (int[] move: possibleMoves) {
+        int[][] tempBoard = board.clone();
+        tempBoard[move[0]][move[1]] = tempBoard[piece[0]][piece[1]];
+        tempBoard[piece[0]][piece[1]] = 0;
+        int val = findBestMove(depth + 1, tempBoard, tempFriendlyPieces);
+        maxVal = Math.max(maxVal, val);
+        if (maxVal == val) {
+          bestMove[0] = piece[0];
+          bestMove[1] = piece[1];
+          bestMove[2] = move[0];
+          bestMove[3] = move[1];
+        }
+      }
+    }
+    return maxVal;
   }
 
 }

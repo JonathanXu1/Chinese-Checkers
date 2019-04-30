@@ -10,6 +10,7 @@ import java.util.Arrays;
 public class ChineseCheckers {
   static int NUM_PLAYERS = 6;
   static int[][] board  = new int[26][18];
+  static int[][] friendlyPieces = new int[10][2];
   static int moves = 0;
   // TODO: Implement move count tracking
 
@@ -41,6 +42,7 @@ public class ChineseCheckers {
   }
 
   private static void initGrid() {
+    // Manually creates bounds for board
     for (int i = 0; i < 26; i++) {
       for (int j = 0; j < 18; j++ ) {
         // Check 1st triangle (points up)
@@ -53,15 +55,14 @@ public class ChineseCheckers {
         }
       }
     }
-  }
-
-  private static void rotateGrid(int rotations){
-    // Currently will stay blank as we're not sure if the server group will rotate for us
-
-    //Each rotation is 60 degrees clockwise
-    int[][] tempBoard = new int[26][18];
-    for(int i = 0; i < rotations; i++){
-
+    // Loads up piece positions
+    int pieceNum = 0;
+    for(int i = 9; i<=12; i++){
+      for(int j = 5; j <= i-4; j++){
+        int[] coordinates = {i, j};
+        friendlyPieces[pieceNum] = coordinates;
+        pieceNum ++;
+      }
     }
   }
 
@@ -69,8 +70,9 @@ public class ChineseCheckers {
     // TODO: calculate score for area around piece instead
     int score = 0;
     // Iterate through all friendly pieces
-    for(int i = 0; i < 26; i++){
-      for(int j = 0; j < 18; j++){
+    for(int[] piece:friendlyPieces){
+        int i = piece[0]; // Row
+        int j = piece[1]; // Column
         // Checks for nearby friendly pieces
         int nearbyPieces = 0;
         for(int v = -1; v <=1; v++){
@@ -86,7 +88,6 @@ public class ChineseCheckers {
         int distanceFromEnd = 25 - i;
         // Being close to friendlies should be scored higher when the piece is closer to the end
         score += ((16 - distanceFromEnd) * nearbyPieces);
-      }
     }
 
     // Add # of pieces already at end

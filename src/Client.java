@@ -38,18 +38,21 @@ public class Client {
             System.out.println("Connection to Server Failed");
             e.printStackTrace();
         }
-
         System.out.println("Connection made.");
+
+        //Join a room
         boolean joinedRoom = false;
         while (!joinedRoom) {
             joinedRoom = enterRoom();
         }
 
+        //Choose a name
         boolean nameChosen = false;
         while (!nameChosen) {
             nameChosen = chooseName();
         }
 
+        //Get server messages sending board and send information to algorithm
         while (running) {
             String msg = getServerMessage().trim();
             if (msg.contains("BOARD")) {
@@ -57,7 +60,8 @@ public class Client {
             }
         }
 
-        try {  //after leaving the main loop we need to close all the sockets
+        //Close sockets and IO
+        try {
             input.close();
             output.close();
             mySocket.close();
@@ -67,50 +71,49 @@ public class Client {
     }
 
     private boolean enterRoom () {
-        Scanner sc = new Scanner(System.in);
+        Scanner keyboardScanner = new Scanner(System.in);
         System.out.println ("What's the name of the room you want to join?");
-        String roomName = sc.next();
-        output.println("JOINROOM " + roomName);
-        output.flush();
+        String roomName = keyboardScanner.next();
+        keyboardScanner.close();
+        sendMessage("JOINROOM " + roomName);
         String msg = getServerMessage();
         if (msg.contains("ERROR")) {
             System.out.println(msg);
             return false;
         }
+        System.out.println("Successfully joined " + roomName + ".");
         return true;
     }
 
     private boolean chooseName () {
-        Scanner sc = new Scanner(System.in);
+        Scanner keyboardScanner = new Scanner(System.in);
         System.out.println ("What's your name?");
-        String name = sc.next();
-        output.println("CHOOSENAME " + name);
-        output.flush();
+        String name = keyboardScanner.next();
+        keyboardScanner.close();
+        sendMessage("CHOOSENAME " + name);
         String msg = getServerMessage();
         if (msg.contains("ERROR")) {
             System.out.println(msg);
             return false;
         }
+        System.out.println("Successfully chosen name " + name + ".");
         return true;
     }
 
-    private String getServerMessage () {
-        while(true) {  // loop unit a message is received
-            try {
-                if (input.ready()) { //check for an incoming messge
-                    String msg = input.readLine(); //read the message
-                    return msg;
-
-                }
-            }catch (IOException e) {
-                System.out.println("Failed to receive msg from the server");
-                e.printStackTrace();
+    private String getServerMessage() {
+        try {
+            if (input.ready()) { //check for an incoming message
+                return input.readLine();
             }
+        } catch (IOException e) {
+            System.out.println("Failed to receive msg from the server");
+            e.printStackTrace();
         }
+        return "";
     }
 
-    public void sendMove (String move) {
-        output.println(move);
+    public void sendMessage (String msg) {
+        output.println(msg);
         output.flush();
     }
 

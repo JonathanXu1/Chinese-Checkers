@@ -15,14 +15,16 @@ public class ChineseCheckers {
 
   public static void main(String[] args) {
     initGrid();
-    readGrid("BOARD 6 0 (14, 8) (15, 5) (17, 7) (19, 14) (20, 6) (22, 12)");
+    String start = "BOARD 1 0 (9, 5) (10, 5) (10, 6) (11, 5) (11, 6) (11, 7) (12, 5) (12, 6) (12, 7) (12, 8)";
+    String rand1 = "BOARD 6 0 (14, 8) (15, 5) (17, 7) (19, 14) (20, 6) (22, 12)";
+    readGrid(start);
     printGrid();
+
+    System.out.println("Score: " + getScore());
 
     Client client = new Client(); //start the client
     client.go(); //begin the connection
   }
-
-
 
   public static void readGrid(String boardMessage) {
     String[] boardInfo = boardMessage.split("\\s*[)] [(]|[)]|[(]\\s*");
@@ -64,6 +66,7 @@ public class ChineseCheckers {
   }
 
   private static int getScore(){
+    // TODO: calculate score for area around piece instead
     int score = 0;
     // Iterate through all friendly pieces
     for(int i = 0; i < 26; i++){
@@ -79,12 +82,10 @@ public class ChineseCheckers {
             }
           }
         }
-        // Finds distance from end
-        int distanceFromEnd = 10;
-        // TODO: Calculate shortest path including diagonals. Also find final position relative to starting position.
+        // Finds distance from end (in steps)
+        int distanceFromEnd = 25 - i;
         // Being close to friendlies should be scored higher when the piece is closer to the end
-        score += (10 - distanceFromEnd * nearbyPieces);
-        // TODO: Replace 10 with total distance from start to end or something larger
+        score += ((16 - distanceFromEnd) * nearbyPieces);
       }
     }
 

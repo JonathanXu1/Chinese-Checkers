@@ -142,9 +142,6 @@ public class ChineseCheckers {
         }
       }
       lineToPrint = lineToPrint.substring(12);
-      for (int i = 0; i < 40 - characters; i++) {
-        lineToPrint += " ";
-      }
       System.out.println(lineToPrint);
     }
     System.out.println("____________________________");

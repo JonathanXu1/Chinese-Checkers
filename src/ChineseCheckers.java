@@ -24,8 +24,10 @@ public class ChineseCheckers {
 
     System.out.println("Score: " + getScore(friendlyPieces));
     for (int i = 0; i < 150; i++) {
-      findBestMove(0, board, friendlyPieces);
-      move(board, friendlyPieces, currentBestMove);
+      int score = findBestMove(0, board, friendlyPieces);
+      if (score != -42069) {
+        move(board, friendlyPieces, currentBestMove);
+      }
       printGrid(board);
       System.out.println("Score: " + getScore(friendlyPieces));
       moves++;
@@ -94,9 +96,9 @@ public class ChineseCheckers {
           }
         }
         // Finds distance from end (in steps)
-        int distanceFromEnd = 25 - i;
+        int distanceFromEnd = (25 - i) + (int)Math.abs(j-(i+1.0)/2); // V distance from bottom + H distance to center line
         // Being close to friendlies should be scored higher when the piece is closer to the end
-        score += ((16 - distanceFromEnd) + nearbyPieces * 20);
+        score += ((16 - distanceFromEnd) + nearbyPieces);
     }
 
     // Add # of pieces already at end
@@ -193,28 +195,35 @@ public class ChineseCheckers {
       for (int j = 0; j < possibleMoves.size(); j++) {
         int[] move = possibleMoves.get(j);
         int[][] tempBoard = copyArray(board);
-        tempBoard[move[0]][move[1]] = tempBoard[piece[0]][piece[1]];
+        tempBoard[move[0]][move[1]] = 1;
         tempBoard[piece[0]][piece[1]] = 0;
         tempFriendlyPieces[i] = move;
-        if (move[0] > piece[0]) { // If moving down
+        // TODO: prevent piece from jumping back and forth
+        if (move[0] > piece[0]) {
           int val = findBestMove(depth + 1, tempBoard, tempFriendlyPieces);
+          if (val == -42069) {
+            val = getScore(friendlyPieces);
+          }
           maxVal = Math.max(maxVal, val);
           if (maxVal == val && depth == 0) {
             currentBestMove[0][0] = piece[0];
             currentBestMove[0][1] = piece[1];
             currentBestMove[1][0] = move[0];
             currentBestMove[1][1] = move[1];
-            System.out.println(depth + " " + maxVal + " " + currentBestMove[0][0] + " " + currentBestMove[0][1] + " " + currentBestMove[1][0] + " " + currentBestMove[1][1]);
-            //printGrid(tempBoard);
+            System.out.println(depth + "  " + maxVal + " " + currentBestMove[0][0] + " " + currentBestMove[0][1] + " " + currentBestMove[1][0] + " " + currentBestMove[1][1]);
+
           }
         }
       }
+    }
+    if (maxVal == Integer.MIN_VALUE) {
+      return -42069;
     }
     return maxVal;
   }
 
   private static void move (int[][] board, int[][] friendlyPieces, int[][] move) {
-    //System.out.println(move[0][0] + " " + move[0][1] + " " + move[1][0] + " " + move[1][1]);
+    System.out.println(move[0][0] + " " + move[0][1] + " " + move[1][0] + " " + move[1][1]);
     board[move[1][0]][move[1][1]] = board[move[0][0]][move[0][1]];
     board[move[0][0]][move[0][1]] = 0;
     for (int[] piece: friendlyPieces) {

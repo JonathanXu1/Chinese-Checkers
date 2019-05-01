@@ -23,7 +23,7 @@ public class ChineseCheckers {
     printGrid(board);
 
     System.out.println("Score: " + getScore(friendlyPieces));
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 150; i++) {
       findBestMove(0, board, friendlyPieces);
       move(board, friendlyPieces, currentBestMove);
       printGrid(board);
@@ -94,7 +94,7 @@ public class ChineseCheckers {
         // Finds distance from end (in steps)
         int distanceFromEnd = 25 - i;
         // Being close to friendlies should be scored higher when the piece is closer to the end
-        score += ((16 - distanceFromEnd) * nearbyPieces);
+        score += ((16 - distanceFromEnd) + nearbyPieces * 20);
     }
 
     // Add # of pieces already at end

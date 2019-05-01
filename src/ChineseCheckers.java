@@ -196,7 +196,7 @@ public class ChineseCheckers {
         tempBoard[move[0]][move[1]] = tempBoard[piece[0]][piece[1]];
         tempBoard[piece[0]][piece[1]] = 0;
         tempFriendlyPieces[i] = move;
-        if (move[0] > piece[0]) {
+        if (move[0] > piece[0]) { // If moving down
           int val = findBestMove(depth + 1, tempBoard, tempFriendlyPieces);
           maxVal = Math.max(maxVal, val);
           if (maxVal == val && depth == 0) {

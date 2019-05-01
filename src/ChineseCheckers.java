@@ -85,8 +85,10 @@ public class ChineseCheckers {
         for(int v = -1; v <=1; v++){
           for(int h = -1; h <=1; h++){
             if(i+v >= 9 && i+v <= 25 && j+h >= 1 && j+h <= 17) { // If in board
-              if((v != 0 || h != 0) && board[i+v][j+h] == 1){ // If friendly
-                nearbyPieces ++;
+              if((v==-1 && h!=1) || (v==0 && h!=0) || (v==1 && h!=-1)) { // Excludes j=1:r-1, j=0:r+0, j=-1:i=1
+                if(board[i+v][j+h] == 1){ // If friendly
+                  nearbyPieces ++;
+                }
               }
             }
           }

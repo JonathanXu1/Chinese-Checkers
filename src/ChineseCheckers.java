@@ -171,10 +171,11 @@ public class ChineseCheckers {
         }
       }
     }
-    System.out.println("Possible moves for piece at " + r1 + " " + c1);
+    //System.out.println("Possible moves for piece at " + r1 + " " + c1);
+    /*
     for(int i = 0; i < moves.size(); i++){
       System.out.println(moves.get(i)[0] + " " + moves.get(i)[1]);
-    }
+    }*/
     return moves;
   }
 

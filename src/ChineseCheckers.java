@@ -13,6 +13,7 @@ public class ChineseCheckers {
   static int[][] friendlyPieces = new int[10][2];
   static int[][] currentBestMove = new int[2][2];
   static int moves = 0;
+  static int[][] visited = new int[26][18];
   // TODO: Implement move count tracking
 
   public static void main(String[] args) {
@@ -99,7 +100,7 @@ public class ChineseCheckers {
         int vertDistanceFromEnd = 25 - i; // V distance from bottom + H distance to center line
         int horDistanceFromEnd = (int)Math.abs(j-(i+1.0)/2);
         // Being close to friendlies should be scored higher when the piece is closer to the end
-        score += (16 - vertDistanceFromEnd) * (16 - vertDistanceFromEnd) + (7 - horDistanceFromEnd) * 2 + nearbyPieces * 2 * (vertDistanceFromEnd / 10);
+        score += (16 - vertDistanceFromEnd) + (7 - horDistanceFromEnd) + nearbyPieces *0.5* (vertDistanceFromEnd);
     }
 
     // Add # of pieces already at end
@@ -149,22 +150,41 @@ public class ChineseCheckers {
     System.out.println("____________________________");
   }
 
-  public static ArrayList<int[]> nextAvailableMoves (int r1, int c1, int[][] board){
-    ArrayList<int[]> moves = new ArrayList<>();
+  public static ArrayList<ArrayList<int[]>> nextAvailableMoves (int r1, int c1, int[][] board, ArrayList<int[]> prevTurn){
+    ArrayList<ArrayList<int[]>> moves = new ArrayList<>();
     int[] move;
+    //System.out.print(r1 + " " + c1 + ": ");
     // Checks adjacent moves and jump moves
     for(int i = -1; i <= 1; i++){
       for(int j = -1; j <= 1; j++){
         if(r1+i >= 9 && r1+i <= 25 && c1+j >= 1 && c1+j <= 17){ // If in board
           if((i==-1 && j!=1) || (i==0 && j!=0) || (i==1 && j!=-1)){ // Excludes j=1:r-1, j=0:r+0, j=-1:i=1
-            if(board[r1+i][c1+j] == 0){ // If adjacent is empty
+            if(board[r1+i][c1+j] == 0 && prevTurn.size() == 0){ // If adjacent is empty and has not just jumped over another piece
+              ArrayList<int[]> turn = new ArrayList<>();
               move = new int[]{r1+i, c1+j};
-              moves.add(move);
-            } else {
+              turn.add(move);
+              moves.add(turn);
+              //System.out.print(move[0] + " " + move[1] + " | ");
+            } else if(board[r1+i][c1+j] > 0){
               if(r1+2*i >= 9 && r1+2*i <= 25 && c1+2*j >= 1 && c1+2*j <= 17){ // If in board
-                if(board[r1+2*i][c1+2*j] == 0) { // If jump is empty
+                if(board[r1+2*i][c1+2*j] == 0 && visited[r1+2*i][c1+2*j] == 0) { // If jump is empty and not previously been there
+                  ArrayList<int[]> turn = prevTurn;
                   move = new int[]{r1+2*i, c1+2*j};
-                  moves.add(move);
+                  turn.add(move);
+                  moves.add(turn);
+                  int[][] tempBoard = copyArray(board);
+                  tempBoard[r1][c1] = 0;
+                  tempBoard[r1+2*i][c1+2*j] = 1;
+                  visited[r1][c1] = 1;
+                  //Iterates through each jump to find combinations of jumps
+                  ArrayList<ArrayList<int[]>> possibleNextMoves = nextAvailableMoves(r1+2*i, c1+2*j, tempBoard, turn);
+                  visited[r1][c1] = 0;
+                  for(ArrayList<int[]> possibleNextMoveSet : possibleNextMoves){
+                    ArrayList<int[]> combinedMoveSet = turn;
+                    combinedMoveSet.addAll(possibleNextMoveSet);
+                    moves.add(combinedMoveSet);
+                  }
+                  //System.out.print(move[0] + " " + move[1] + " | ");
                 }
               }
             }
@@ -192,16 +212,20 @@ public class ChineseCheckers {
     // Loop through every move of every friendly piece
     for (int i = 0; i < tempFriendlyPieces.length; i++) {
       int[] piece = tempFriendlyPieces[i];
-      ArrayList<int[]> possibleMoves = nextAvailableMoves(piece[0], piece[1], board);
-      for (int[] move: possibleMoves) {
+      ArrayList<int[]> emptyMoves = new ArrayList<>();
+      visited = new int[26][18];
+      ArrayList<ArrayList<int[]>> possibleMoves = nextAvailableMoves(piece[0], piece[1], copyArray(board), emptyMoves);
+      for (int j = 0; j < possibleMoves.size(); j++) {
+        ArrayList<int[]> move = possibleMoves.get(j);
+        int[] finalPos = move.get(move.size() - 1);
         int[][] tempBoard = copyArray(board);
 
         // Make move on copy of board
-        tempBoard[move[0]][move[1]] = 1;
+        tempBoard[finalPos[0]][finalPos[1]] = 1;
         tempBoard[piece[0]][piece[1]] = 0;
-        tempFriendlyPieces[i] = move;
+        tempFriendlyPieces[i] = finalPos;
         // TODO: prevent piece from jumping back and forth
-        if (move[0] >= piece[0]) { // Makes piece never move backwards
+        if (finalPos[0] > piece[0]) { // Makes piece never move backwards
 
           // Recursive call, determines score of move depending on potential score of future moves
           int val = findBestMove(depth + 1, tempBoard, tempFriendlyPieces);
@@ -218,9 +242,9 @@ public class ChineseCheckers {
           if (maxVal == val && depth == 0) {
             currentBestMove[0][0] = piece[0];
             currentBestMove[0][1] = piece[1];
-            currentBestMove[1][0] = move[0];
-            currentBestMove[1][1] = move[1];
-            //System.out.println(depth + "  " + maxVal + " " + currentBestMove[0][0] + " " + currentBestMove[0][1] + " " + currentBestMove[1][0] + " " + currentBestMove[1][1]);
+            currentBestMove[1][0] = finalPos[0];
+            currentBestMove[1][1] = finalPos[1];
+            System.out.println(depth + "  " + maxVal + " " + currentBestMove[0][0] + " " + currentBestMove[0][1] + " " + currentBestMove[1][0] + " " + currentBestMove[1][1]);
           }
           //System.out.println(depth + "  " + maxVal + " " + currentBestMove[0][0] + " " + currentBestMove[0][1] + " " + currentBestMove[1][0] + " " + currentBestMove[1][1]);
 

@@ -22,14 +22,14 @@ public class ChineseCheckers {
     readGrid(start);
     printGrid(board);
 
-    System.out.println("Score: " + getScore(friendlyPieces));
+    System.out.println("Score: " + getScore(friendlyPieces, 0));
     while (!checkWin(board)) {
       int score = findBestMove(0, board, friendlyPieces);
       if (score != -42069) {
         move(board, friendlyPieces, currentBestMove);
       }
       printGrid(board);
-      System.out.println("Score: " + getScore(friendlyPieces));
+      System.out.println("Score: " + getScore(friendlyPieces, 0));
       moves++;
     }
     //Client client = new Client(); //start the client
@@ -75,7 +75,7 @@ public class ChineseCheckers {
     }
   }
 
-  private static int getScore(int[][] friendlyPieces){
+  private static int getScore(int[][] friendlyPieces, int depth){
     // TODO: calculate score for area around piece instead
     int score = 0;
     // Iterate through all friendly pieces
@@ -96,15 +96,15 @@ public class ChineseCheckers {
           }
         }
         // Finds distance from end (in steps)
-        int distanceFromEnd = (25 - i) + (int)Math.abs(j-(i+1.0)/2); // V distance from bottom + H distance to center line
+        int vertDistanceFromEnd = 25 - i; // V distance from bottom + H distance to center line
+        int horDistanceFromEnd = (int)Math.abs(j-(i+1.0)/2);
         // Being close to friendlies should be scored higher when the piece is closer to the end
-        score += ((16 - distanceFromEnd) + nearbyPieces);
+        score += (16 - vertDistanceFromEnd) * (16 - vertDistanceFromEnd) + (7 - horDistanceFromEnd) * 2 + nearbyPieces * 2 * (vertDistanceFromEnd / 10);
     }
 
     // Add # of pieces already at end
-
     // Subtract turns taken
-    score -= moves;
+    score -= (moves + depth) * 4;
     // TODO: Get suitable multiplier for moves score reduction
     return score;
   }
@@ -180,10 +180,10 @@ public class ChineseCheckers {
     return moves;
   }
 
-  public static int findBestMove (int depth, int[][] board, int[][] friendlyPieces) {
+  private static int findBestMove (int depth, int[][] board, int[][] friendlyPieces) {
     // Stop recursive search after 3 turns depth
-    if (depth >= 4) {
-      return getScore(friendlyPieces);
+    if (depth >= 1) {
+      return getScore(friendlyPieces, depth - 1);
     }
 
     int[][] tempFriendlyPieces = copyArray(friendlyPieces);
@@ -193,8 +193,7 @@ public class ChineseCheckers {
     for (int i = 0; i < tempFriendlyPieces.length; i++) {
       int[] piece = tempFriendlyPieces[i];
       ArrayList<int[]> possibleMoves = nextAvailableMoves(piece[0], piece[1], board);
-      for (int j = 0; j < possibleMoves.size(); j++) {
-        int[] move = possibleMoves.get(j);
+      for (int[] move: possibleMoves) {
         int[][] tempBoard = copyArray(board);
 
         // Make move on copy of board
@@ -202,14 +201,14 @@ public class ChineseCheckers {
         tempBoard[piece[0]][piece[1]] = 0;
         tempFriendlyPieces[i] = move;
         // TODO: prevent piece from jumping back and forth
-        if (move[0] > piece[0]) { // Makes piece never move backwards
+        if (move[0] >= piece[0]) { // Makes piece never move backwards
 
           // Recursive call, determines score of move depending on potential score of future moves
           int val = findBestMove(depth + 1, tempBoard, tempFriendlyPieces);
 
           // If no moves can be made on future board, set val to score of current board
           if (val == -42069) {
-            val = getScore(friendlyPieces);
+            val = getScore(friendlyPieces, depth);
           }
 
           // Gets max score
@@ -221,9 +220,10 @@ public class ChineseCheckers {
             currentBestMove[0][1] = piece[1];
             currentBestMove[1][0] = move[0];
             currentBestMove[1][1] = move[1];
-            System.out.println(depth + "  " + maxVal + " " + currentBestMove[0][0] + " " + currentBestMove[0][1] + " " + currentBestMove[1][0] + " " + currentBestMove[1][1]);
-
+            //System.out.println(depth + "  " + maxVal + " " + currentBestMove[0][0] + " " + currentBestMove[0][1] + " " + currentBestMove[1][0] + " " + currentBestMove[1][1]);
           }
+          //System.out.println(depth + "  " + maxVal + " " + currentBestMove[0][0] + " " + currentBestMove[0][1] + " " + currentBestMove[1][0] + " " + currentBestMove[1][1]);
+
         }
       }
     }
@@ -236,7 +236,7 @@ public class ChineseCheckers {
   }
 
   private static void move (int[][] board, int[][] friendlyPieces, int[][] move) {
-    //System.out.println(move[0][0] + " " + move[0][1] + " " + move[1][0] + " " + move[1][1]);
+    System.out.println(move[0][0] + " " + move[0][1] + " " + move[1][0] + " " + move[1][1]);
     board[move[1][0]][move[1][1]] = board[move[0][0]][move[0][1]];
     board[move[0][0]][move[0][1]] = 0;
 

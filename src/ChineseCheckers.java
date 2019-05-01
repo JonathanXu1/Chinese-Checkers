@@ -23,7 +23,7 @@ public class ChineseCheckers {
     printGrid(board);
 
     System.out.println("Score: " + getScore(friendlyPieces));
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 100; i++) {
       findBestMove(0, board, friendlyPieces);
       move(board, friendlyPieces, currentBestMove);
       printGrid(board);
@@ -179,11 +179,11 @@ public class ChineseCheckers {
   }
 
   public static int findBestMove (int depth, int[][] board, int[][] friendlyPieces) {
-    if (depth >= 4) {
+    if (depth >= 3) {
       return getScore(friendlyPieces);
     }
     int[][] tempFriendlyPieces = copyArray(friendlyPieces);
-    int maxVal = -(1<<30);
+    int maxVal = Integer.MIN_VALUE;
     for (int i = 0; i < tempFriendlyPieces.length; i++) {
       int[] piece = tempFriendlyPieces[i];
       ArrayList<int[]> possibleMoves = nextAvailableMoves(piece[0], piece[1], board);
@@ -193,15 +193,17 @@ public class ChineseCheckers {
         tempBoard[move[0]][move[1]] = tempBoard[piece[0]][piece[1]];
         tempBoard[piece[0]][piece[1]] = 0;
         tempFriendlyPieces[i] = move;
-        int val = findBestMove(depth + 1, tempBoard, tempFriendlyPieces);
-        maxVal = Math.max(maxVal, val);
-        if (maxVal == val && depth == 0) {
-          currentBestMove[0][0] = piece[0];
-          currentBestMove[0][1] = piece[1];
-          currentBestMove[1][0] = move[0];
-          currentBestMove[1][1] = move[1];
-          System.out.println(depth + " " + maxVal + " " + currentBestMove[0][0] + " " + currentBestMove[0][1] + " " + currentBestMove[1][0] + " " + currentBestMove[1][1]);
-          //printGrid(tempBoard);
+        if (move[0] > piece[0]) {
+          int val = findBestMove(depth + 1, tempBoard, tempFriendlyPieces);
+          maxVal = Math.max(maxVal, val);
+          if (maxVal == val && depth == 0) {
+            currentBestMove[0][0] = piece[0];
+            currentBestMove[0][1] = piece[1];
+            currentBestMove[1][0] = move[0];
+            currentBestMove[1][1] = move[1];
+            System.out.println(depth + " " + maxVal + " " + currentBestMove[0][0] + " " + currentBestMove[0][1] + " " + currentBestMove[1][0] + " " + currentBestMove[1][1]);
+            //printGrid(tempBoard);
+          }
         }
       }
     }

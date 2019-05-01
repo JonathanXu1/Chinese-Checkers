@@ -33,8 +33,8 @@ public class ChineseCheckers {
       System.out.println("Score: " + getScore(friendlyPieces));
       moves++;
     }
-    //Client client = new Client(); //start the client
-    ///client.go(); //begin the connection
+    Client client = new Client(); //start the client
+    client.go(); //begin the connection
   }
 
   public static void readGrid(String boardMessage) {
@@ -201,6 +201,7 @@ public class ChineseCheckers {
   }
 
   public static int findBestMove (int depth, int[][] board, int[][] friendlyPieces) {
+    /*
     if (depth >= 3) {
       return getScore(friendlyPieces);
     }
@@ -238,6 +239,8 @@ public class ChineseCheckers {
       return -42069;
     }
     return maxVal;
+    */
+    return 0;
   }
 
   private static void move (int[][] board, int[][] friendlyPieces, int[][] move) {

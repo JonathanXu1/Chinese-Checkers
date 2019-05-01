@@ -87,8 +87,10 @@ public class ChineseCheckers {
         for(int v = -1; v <=1; v++){
           for(int h = -1; h <=1; h++){
             if(i+v >= 9 && i+v <= 25 && j+h >= 1 && j+h <= 17) { // If in board
-              if((v != 0 || h != 0) && board[i+v][j+h] == 1){ // If friendly
-                nearbyPieces ++;
+              if((v==-1 && h!=1) || (v==0 && h!=0) || (v==1 && h!=-1)) { // Excludes j=1:r-1, j=0:r+0, j=-1:i=1
+                if(board[i+v][j+h] == 1){ // If friendly
+                  nearbyPieces ++;
+                }
               }
             }
           }
@@ -241,6 +243,22 @@ public class ChineseCheckers {
       }
     }
     return copy;
+  }
+
+  private static boolean checkWin(int[][] board){
+    boolean full = true;
+    boolean containsFriendly = false;
+    for(int i = 22; i <= 25; i++){ // Checks bottom point of star
+      for(int j = i-12; j<=13; j++){
+        if(board[i][j] == 0){
+          full = false;
+        } else if (board[i][j] == 1){
+          containsFriendly = true;
+        }
+      }
+    }
+
+    return full && containsFriendly;
   }
 }
 

@@ -234,5 +234,21 @@ public class ChineseCheckers {
     }
     return copy;
   }
+
+  private static boolean checkWin(int[][] board){
+    boolean full = true;
+    boolean containsFriendly = false;
+    for(int i = 22; i <= 25; i++){ // Checks bottom point of star
+      for(int j = i-12; j<=13; j++){
+        if(board[i][j] == 0){
+          full = false;
+        } else if (board[i][j] == 1){
+          containsFriendly = true;
+        }
+      }
+    }
+
+    return full && containsFriendly;
+  }
 }
 

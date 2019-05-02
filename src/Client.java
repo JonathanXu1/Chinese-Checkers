@@ -46,8 +46,6 @@ public class Client {
 
 
     if(running){
-      output.println();
-      output.flush();
       //Join a room
       boolean joinedRoom = false;
       while (!joinedRoom) {
@@ -88,10 +86,7 @@ public class Client {
     String roomName = keyboardScanner.nextLine();
     sendMessage("JOINROOM " + roomName);
     String msg = getServerMessage();
-    msg = getServerMessage();
-    System.out.println(msg);
     if (msg.contains("ERROR")) {
-      System.out.println(msg);
       return false;
     }
     System.out.println("Successfully joined " + roomName + ".");
@@ -104,7 +99,6 @@ public class Client {
     sendMessage("CHOOSENAME " + name);
     String msg = getServerMessage();
     if (msg.contains("ERROR")) {
-      System.out.println(msg);
       return false;
     }
     System.out.println("Successfully chosen name " + name + ".");
@@ -112,17 +106,18 @@ public class Client {
   }
 
   private String getServerMessage() {
-    try {
-      if (input.ready()) { //check for an incoming message
-        String message = input.readLine().trim();
-        System.out.println("Server response: " + message);
-        return message;
+    while (true) {
+      try {
+        if (input.ready()) { //check for an incoming message
+          String message = input.readLine().trim();
+          System.out.println("Server response: " + message);
+          return message;
+        }
+      } catch (IOException e) {
+        System.out.println("Failed to receive msg from the server");
+        e.printStackTrace();
       }
-    } catch (IOException e) {
-      System.out.println("Failed to receive msg from the server");
-      e.printStackTrace();
     }
-    return "";
   }
 
   public void sendMessage(String msg) {

@@ -124,27 +124,24 @@ public class ChineseCheckers {
         continue;
       }
       for (int i = 0; i < 26-rowNum; i++) {
-        lineToPrint += "_";
+        lineToPrint += " ";
         characters++;
       }
       for (int item: row) {
         if (item == -1) {
-          lineToPrint += "__";
+          lineToPrint += "  ";
           characters += 2;
         } else if (item == 0) {
-          lineToPrint += item + " ";
+          lineToPrint += "●" + " ";
           characters += 2;
         } else {
           lineToPrint += "\033[0;3" + item + "m";
-          lineToPrint += item + " ";
+          lineToPrint += "⬤" + " ";
           characters += 2;
           lineToPrint += "\033[0m";
         }
       }
       lineToPrint = lineToPrint.substring(12);
-      for (int i = 0; i < 40 - characters; i++) {
-        lineToPrint += "_";
-      }
       System.out.println(lineToPrint);
     }
     System.out.println("____________________________");

@@ -33,7 +33,11 @@ public class ChineseCheckers {
     System.out.println("Score: " + getScore(friendlyPieces, 0));
     moves++;
 
-    return("MOVE ");
+    String output = "MOVE";
+    for(int[] step:currentBestMove){
+      output += " (" + Integer.toString(step[0]) + "," + Integer.toString(step[1]) + ")";
+    }
+    return(output);
   }
 
   public void readGrid(String boardMessage) {

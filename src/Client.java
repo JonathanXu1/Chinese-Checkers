@@ -13,19 +13,19 @@ import java.util.Scanner;
  */
 
 public class Client {
-  private Socket mySocket; //socket for connection
-  private BufferedReader input; //reader for network stream
-  private PrintWriter output;  //printwriter for network output
-  private boolean running = false; //thread status via boolean
+  private static Socket mySocket; //socket for connection
+  private static BufferedReader input; //reader for network stream
+  private static PrintWriter output;  //printwriter for network output
+  private static boolean running = false; //thread status via boolean
+  //TODO: Delete running boolean probably
+  private static ChineseCheckers algorithm = new ChineseCheckers();
 
-  private Scanner keyboardScanner = new Scanner(System.in);
-
+  private static Scanner keyboardScanner = new Scanner(System.in);
 
   /**
-   * Go
-   * Starts the client
+   * Main
    */
-  public void go() {
+  public static void main(String[] args) {
 
     //Create a socket (try-catch required)
     System.out.println("Attempting to make a connection..");
@@ -44,13 +44,11 @@ public class Client {
       e.printStackTrace();
     }
 
-
     if(running){
       //Join a room
       enterRoom();
       //Choose a name
       chooseName();
-
       keyboardScanner.close();
     }
 
@@ -58,9 +56,10 @@ public class Client {
     while (running) {
       String msg = getServerMessage();
       if (msg.contains("BOARD")) {
-        ChineseCheckers.readGrid(msg);
+        algorithm.readGrid(msg);
       }
-      String output = "";
+      if(!algorithm.checkWin());
+      String output = algorithm.makeMove();
       sendMessage(output);
     }
 
@@ -74,7 +73,7 @@ public class Client {
     }
   }
 
-  private void enterRoom() {
+  private static void enterRoom() {
     boolean success = false;
     String roomName = "";
     while(!success) {
@@ -89,7 +88,7 @@ public class Client {
     System.out.println("Successfully joined " + roomName + ".");
   }
 
-  private void chooseName() {
+  private static void chooseName() {
     boolean success = false;
     String name = "";
     while(!success){
@@ -104,7 +103,7 @@ public class Client {
     System.out.println("Successfully chosen name " + name + ".");
   }
 
-  private String getServerMessage() {
+  private static String getServerMessage() {
     while (true) {
       try {
         if (input.ready()) { //check for an incoming message
@@ -119,12 +118,9 @@ public class Client {
     }
   }
 
-  public void sendMessage(String msg) {
+  public static void sendMessage(String msg) {
     output.println(msg);
     output.flush();
   }
 
-  public void setRunning(boolean running) {
-    this.running = running;
-  }
 }

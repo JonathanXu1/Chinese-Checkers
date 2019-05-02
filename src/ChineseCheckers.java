@@ -8,55 +8,49 @@ import java.util.Arrays;
 * @since   2019-04-24
 */
 public class ChineseCheckers {
-  static int NUM_PLAYERS = 6;
-  static int[][] board  = new int[26][18];
-  static int[][] friendlyPieces = new int[10][2];
-  static int[][] currentBestMove = new int[2][2];
-  static int moves = 0;
-  static int[][] visited = new int[26][18];
+  int NUM_PLAYERS = 6;
+  int[][] board  = new int[26][18];
+  int[][] friendlyPieces = new int[10][2];
+  int[][] currentBestMove = new int[2][2];
+  int moves = 0;
+  int[][] visited = new int[26][18];
   // TODO: Implement move count tracking
 
-  public static void main(String[] args) {
-    initGrid();
+  // Board configs for testing
+  String start = "BOARD 1 0 (9, 5) (10, 5) (10, 6) (11, 5) (11, 6) (11, 7) (12, 5) (12, 6) (12, 7) (12, 8)";
+  String rand1 = "BOARD 6 0 (14, 8) (15, 5) (17, 7) (19, 14) (20, 6) (22, 12)";
 
-    Client client = new Client(); //start the client
-    client.go(); //begin the connection
-    /*
-    String start = "BOARD 1 0 (9, 5) (10, 5) (10, 6) (11, 5) (11, 6) (11, 7) (12, 5) (12, 6) (12, 7) (12, 8)";
-    String rand1 = "BOARD 6 0 (14, 8) (15, 5) (17, 7) (19, 14) (20, 6) (22, 12)";
-    readGrid(start);
-    printGrid(board);
-    Client client = new Client(); //start the client
-    client.go(); //begin the connection
-    /*
-    System.out.println("Score: " + getScore(friendlyPieces, 0));
-    while (!checkWin(board)) {
-      int score = findBestMove(0, board, friendlyPieces);
-      if (score != -42069) {
-        move(board, friendlyPieces, currentBestMove);
-      }
-      printGrid(board);
-      System.out.println("Score: " + getScore(friendlyPieces, 0));
-      moves++;
-    }
-    */
+  ChineseCheckers() {
+    initGrid();
   }
 
-  public static void readGrid(String boardMessage) {
+  public String makeMove(){
+    //printGrid(board);
+    int score = findBestMove(0, board, friendlyPieces);
+    if (score != -42069) {
+      move(currentBestMove);
+    }
+    System.out.println("Score: " + getScore(friendlyPieces, 0));
+    moves++;
+
+
+  }
+
+  public void readGrid(String boardMessage) {
     String[] boardInfo = boardMessage.split("\\s*[)] [(]|[)]|[(]\\s*");
     int playersRemaining = Integer.parseInt(boardInfo[0].split(" ")[1]);
     int piecesProcessed = 0;
 
     String[] pieces = Arrays.copyOfRange(boardInfo, 1, boardInfo.length);
     for (String piece: pieces) {
-      int row = Integer.parseInt(piece.split(", ")[0]);
-      int col = Integer.parseInt(piece.split(", ")[1]);
+      int row = Integer.parseInt(piece.split(",")[0]);
+      int col = Integer.parseInt(piece.split(",")[1]);
       board[row][col] = (piecesProcessed / 10) + 1;
       piecesProcessed++;
     }
   }
 
-  private static void initGrid() {
+  private void initGrid() {
     // Manually creates bounds for board
     for (int i = 0; i < 26; i++) {
       for (int j = 0; j < 18; j++ ) {
@@ -81,7 +75,7 @@ public class ChineseCheckers {
     }
   }
 
-  private static int getScore(int[][] friendlyPieces, int depth){
+  private int getScore(int[][] friendlyPieces, int depth){
     // TODO: calculate score for area around piece instead
     int score = 0;
     // Iterate through all friendly pieces
@@ -118,7 +112,7 @@ public class ChineseCheckers {
   //
   // TESTING FUNCTION
   //
-  private static void printGrid(int[][] board) {
+  private void printGrid(int[][] board) {
     System.out.println("____________________________");
     int rowNum = 0;
     for (int[] row: board) {
@@ -152,7 +146,7 @@ public class ChineseCheckers {
     System.out.println("____________________________");
   }
 
-  public static ArrayList<ArrayList<int[]>> nextAvailableMoves (int r1, int c1, int[][] board, ArrayList<int[]> prevTurn){
+  public ArrayList<ArrayList<int[]>> nextAvailableMoves (int r1, int c1, int[][] board, ArrayList<int[]> prevTurn){
     ArrayList<ArrayList<int[]>> moves = new ArrayList<>();
     int[] move;
     //System.out.print(r1 + " " + c1 + ": ");
@@ -200,7 +194,7 @@ public class ChineseCheckers {
     return moves;
   }
 
-  private static int findBestMove (int depth, int[][] board, int[][] friendlyPieces) {
+  private int findBestMove (int depth, int[][] board, int[][] friendlyPieces) {
     // Stop recursive search after 3 turns depth
     if (depth >= 1) {
       return getScore(friendlyPieces, depth - 1);
@@ -248,10 +242,8 @@ public class ChineseCheckers {
 
           // If found move with higher potential score, set the best move to the first move done
           if (maxVal == val && depth == 0) {
-            currentBestMove[0][0] = piece[0];
-            currentBestMove[0][1] = piece[1];
-            currentBestMove[1][0] = finalPos[0];
-            currentBestMove[1][1] = finalPos[1];
+            move.add(0, piece);
+            currentBestMove = move;
             System.out.println(depth + "  " + maxVal + " " + currentBestMove[0][0] + " " + currentBestMove[0][1] + " " + currentBestMove[1][0] + " " + currentBestMove[1][1]);
           }
           //System.out.println(depth + "  " + maxVal + " " + currentBestMove[0][0] + " " + currentBestMove[0][1] + " " + currentBestMove[1][0] + " " + currentBestMove[1][1]);
@@ -267,7 +259,7 @@ public class ChineseCheckers {
     return maxVal;
   }
 
-  private static void move (int[][] board, int[][] friendlyPieces, int[][] move) {
+  private void move (int[][] move) {
     System.out.println(move[0][0] + " " + move[0][1] + " " + move[1][0] + " " + move[1][1]);
     board[move[1][0]][move[1][1]] = board[move[0][0]][move[0][1]];
     board[move[0][0]][move[0][1]] = 0;
@@ -281,7 +273,7 @@ public class ChineseCheckers {
     }
   }
 
-  private static int[][] copyArray (int[][] board) {
+  private int[][] copyArray (int[][] board) {
     int[][] copy = new int[board.length][board[0].length];
     for (int i = 0; i < board.length; i++) {
       for (int j = 0; j < board[0].length; j++) {
@@ -291,7 +283,7 @@ public class ChineseCheckers {
     return copy;
   }
 
-  private static boolean checkWin(int[][] board){
+  public boolean checkWin(){
     boolean full = true;
     boolean containsFriendly = false;
     for(int i = 22; i <= 25; i++){ // Checks bottom point of star

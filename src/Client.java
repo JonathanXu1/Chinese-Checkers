@@ -57,10 +57,10 @@ public class Client {
       String msg = getServerMessage();
       if (msg.contains("BOARD")) {
         algorithm.readGrid(msg);
+        if(!algorithm.checkWin());
+        String output = algorithm.makeMove();
+        sendMessage(output);
       }
-      if(!algorithm.checkWin());
-      String output = algorithm.makeMove();
-      sendMessage(output);
     }
 
     //Close sockets and IO

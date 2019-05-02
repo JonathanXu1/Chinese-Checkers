@@ -25,18 +25,25 @@ public class ChineseCheckers {
   }
 
   public String makeMove(){
-    //printGrid(board);
-    int score = findBestMove(0, board, friendlyPieces);
-    if (score == -42069) {
-      // No valid moves
-    }
-    //System.out.println("Score: " + getScore(friendlyPieces, 0));
-    moves++;
-
     String output = "MOVE";
-    for(int[] step:currentBestMove){
-      output += " (" + Integer.toString(step[0]) + "," + Integer.toString(step[1]) + ")";
+
+    if(moves == 0){ // Default open move right
+      output += "(12,8) (13,8)";
+    } else if (moves == 1){ // Default open move left
+      output += "(12,5) (13,6)";
+    } else { // Algorithm
+      //printGrid(board);
+      int score = findBestMove(0, board, friendlyPieces);
+      if (score == -42069) {
+        // No valid moves
+      }
+      System.out.println("Score: " + getScore(friendlyPieces, 0));
+
+      for(int[] step:currentBestMove){
+        output += " (" + Integer.toString(step[0]) + "," + Integer.toString(step[1]) + ")";
+      }
     }
+    moves++;
     return(output);
   }
 
@@ -84,7 +91,7 @@ public class ChineseCheckers {
     }
   }
 
-  private int getScore(int[][] friendlyPieces, int depth){
+  private int getScore(int[][] friendlyPieces, int turnNum){
     // TODO: calculate score for area around piece instead
     int score = 0;
     // Iterate through all friendly pieces
@@ -107,13 +114,23 @@ public class ChineseCheckers {
         // Finds distance from end (in steps)
         int vertDistanceFromEnd = 25 - i; // V distance from bottom + H distance to center line
         int horDistanceFromEnd = (int)Math.abs(j-(i+1.0)/2);
+        // Being closer to the end is good
+        score += ((16 - vertDistanceFromEnd)*5 + (7 - horDistanceFromEnd)) * 3;
         // Being close to friendlies should be scored higher when the piece is closer to the end
-        score += (16 - vertDistanceFromEnd) + (7 - horDistanceFromEnd) + nearbyPieces *0.5* (vertDistanceFromEnd);
+        score += nearbyPieces *0.5* (vertDistanceFromEnd);
     }
 
-    // Add # of pieces already at end
+    // Pieces at end are good
+    int piecesAtEnd = 0;
+    for(int[] pieceCoordinate:friendlyPieces){
+      if(pieceCoordinate[0] >= 22){
+        piecesAtEnd ++;
+      }
+    }
+    score += piecesAtEnd * 50;
+
     // Subtract turns taken
-    score -= (moves + depth) * 4;
+    score -= (moves + turnNum) * 10;
     // TODO: Get suitable multiplier for moves score reduction
     return score;
   }
@@ -205,8 +222,8 @@ public class ChineseCheckers {
 
   private int findBestMove (int depth, int[][] board, int[][] friendlyPieces) {
     // Stop recursive search after 3 turns depth
-    if (depth >= 1) {
-      return getScore(friendlyPieces, depth - 1);
+    if (depth >= 3) {
+      return getScore(friendlyPieces, depth - 1 + moves);
     }
 
     int[][] tempFriendlyPieces = copyArray(friendlyPieces);
@@ -229,14 +246,14 @@ public class ChineseCheckers {
         tempBoard[piece[0]][piece[1]] = 0;
         tempFriendlyPieces[i] = finalPos;
         // TODO: prevent piece from jumping back and forth
-        if (finalPos[0] > piece[0]) { // Makes piece never move backwards
+        if (finalPos[0] >= piece[0]) { // Makes piece never move backwards
 
           // Recursive call, determines score of move depending on potential score of future moves
           int val = findBestMove(depth + 1, tempBoard, tempFriendlyPieces);
 
           // If no moves can be made on future board, set val to score of current board
           if (val == -42069) {
-            val = getScore(friendlyPieces, depth);
+            val = getScore(friendlyPieces, depth + moves);
           }
 
           // Gets max score

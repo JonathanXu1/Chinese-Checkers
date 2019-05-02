@@ -61,6 +61,7 @@ public class Client {
       if(!algorithm.checkWin());
       String output = algorithm.makeMove();
       sendMessage(output);
+      System.out.println("Post to server: " + output);
     }
 
     //Close sockets and IO

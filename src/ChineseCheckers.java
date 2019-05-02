@@ -30,7 +30,7 @@ public class ChineseCheckers {
     if (score != -42069) {
       move(currentBestMove);
     }
-    System.out.println("Score: " + getScore(friendlyPieces, 0));
+    //System.out.println("Score: " + getScore(friendlyPieces, 0));
     moves++;
 
     String output = "MOVE";
@@ -212,7 +212,7 @@ public class ChineseCheckers {
       int[] piece = tempFriendlyPieces[i];
       ArrayList<int[]> emptyMoves = new ArrayList<>();
       visited = new int[26][18];
-      System.out.print(piece[0] + " " + piece[1] + ": ");
+      //System.out.print(piece[0] + " " + piece[1] + ": ");
       ArrayList<ArrayList<int[]>> possibleMoves = nextAvailableMoves(piece[0], piece[1], copyArray(board), emptyMoves);
       for (int j = 0; j < possibleMoves.size(); j++) {
         ArrayList<int[]> move = possibleMoves.get(j);

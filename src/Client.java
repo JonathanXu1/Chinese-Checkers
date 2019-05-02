@@ -46,19 +46,10 @@ public class Client {
 
 
     if(running){
-      output.println();
-      output.flush();
       //Join a room
-      boolean joinedRoom = false;
-      while (!joinedRoom) {
-        joinedRoom = enterRoom();
-      }
-
+      enterRoom();
       //Choose a name
-      boolean nameChosen = false;
-      while (!nameChosen) {
-        nameChosen = chooseName();
-      }
+      chooseName();
 
       keyboardScanner.close();
     }
@@ -83,32 +74,36 @@ public class Client {
     }
   }
 
-  private boolean enterRoom() {
-    System.out.println("What's the name of the room you want to join?");
-    String roomName = keyboardScanner.nextLine();
-    sendMessage("JOINROOM " + roomName);
-    String msg = getServerMessage();
-    msg = getServerMessage();
-    System.out.println(msg);
-    if (msg.contains("ERROR")) {
+  private void enterRoom() {
+    boolean success = false;
+    String roomName = "";
+    while(!success) {
+      System.out.println("What's the name of the room you want to join?");
+      roomName = keyboardScanner.nextLine();
+      sendMessage("JOINROOM " + roomName);
+      String msg = getServerMessage();
+      msg = getServerMessage();
       System.out.println(msg);
-      return false;
+      if (msg.contains("OK")) {
+        success = true;
+      }
     }
     System.out.println("Successfully joined " + roomName + ".");
-    return true;
   }
 
-  private boolean chooseName() {
-    System.out.println("What's your name?");
-    String name = keyboardScanner.nextLine();
-    sendMessage("CHOOSENAME " + name);
-    String msg = getServerMessage();
-    if (msg.contains("ERROR")) {
-      System.out.println(msg);
-      return false;
+  private void chooseName() {
+    boolean success = false;
+    String name = "";
+    while(!success){
+      System.out.println("What's your name?");
+      name = keyboardScanner.nextLine();
+      sendMessage("CHOOSENAME " + name);
+      String msg = getServerMessage();
+      if (msg.contains("OK")) {
+        success = true;
+      }
     }
     System.out.println("Successfully chosen name " + name + ".");
-    return true;
   }
 
   private String getServerMessage() {

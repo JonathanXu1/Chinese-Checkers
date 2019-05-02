@@ -11,7 +11,7 @@ public class ChineseCheckers {
   int NUM_PLAYERS = 6;
   int[][] board  = new int[26][18];
   int[][] friendlyPieces = new int[10][2];
-  int[][] currentBestMove = new int[2][2];
+  ArrayList<int[]>  currentBestMove = new ArrayList<int[]>();
   int moves = 0;
   int[][] visited = new int[26][18];
   // TODO: Implement move count tracking
@@ -211,13 +211,6 @@ public class ChineseCheckers {
       System.out.print(piece[0] + " " + piece[1] + ": ");
       ArrayList<ArrayList<int[]>> possibleMoves = nextAvailableMoves(piece[0], piece[1], copyArray(board), emptyMoves);
       for (int j = 0; j < possibleMoves.size(); j++) {
-        for (int k = 0; k < possibleMoves.get(j).size(); k++) {
-          System.out.print(possibleMoves.get(j).get(k)[0] + " " + possibleMoves.get(j).get(k)[1] + " ,");
-        }
-        System.out.print(" | ");
-      }
-      System.out.println();
-      for (int j = 0; j < possibleMoves.size(); j++) {
         ArrayList<int[]> move = possibleMoves.get(j);
         int[] finalPos = move.get(move.size() - 1);
         int[][] tempBoard = copyArray(board);
@@ -244,7 +237,6 @@ public class ChineseCheckers {
           if (maxVal == val && depth == 0) {
             move.add(0, piece);
             currentBestMove = move;
-            System.out.println(depth + "  " + maxVal + " " + currentBestMove[0][0] + " " + currentBestMove[0][1] + " " + currentBestMove[1][0] + " " + currentBestMove[1][1]);
           }
           //System.out.println(depth + "  " + maxVal + " " + currentBestMove[0][0] + " " + currentBestMove[0][1] + " " + currentBestMove[1][0] + " " + currentBestMove[1][1]);
 
@@ -259,16 +251,17 @@ public class ChineseCheckers {
     return maxVal;
   }
 
-  private void move (int[][] move) {
-    System.out.println(move[0][0] + " " + move[0][1] + " " + move[1][0] + " " + move[1][1]);
-    board[move[1][0]][move[1][1]] = board[move[0][0]][move[0][1]];
-    board[move[0][0]][move[0][1]] = 0;
+  private void move (ArrayList<int[]> moveSet) {
+    int[] initialPos = moveSet.get(0);
+    int[] finalPos = moveSet.get(moveSet.size() - 1);
+    board[finalPos[0]][finalPos[1]] = board[initialPos[0]][initialPos[1]];
+    board[initialPos[0]][initialPos[1]] = 0;
 
     // Change array of friendly pieces to match move done
     for (int[] piece: friendlyPieces) {
-      if (piece[0] == move[0][0] && piece[1] == move[0][1]) {
-        piece[0] = move[1][0];
-        piece[1] = move[1][1];
+      if (piece[0] == initialPos[0] && piece[1] == initialPos[1]) {
+        piece[0] = finalPos[0];
+        piece[1] = finalPos[1];
       }
     }
   }

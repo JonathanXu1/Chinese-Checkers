@@ -18,6 +18,10 @@ public class ChineseCheckers {
 
   public static void main(String[] args) {
     initGrid();
+
+    Client client = new Client(); //start the client
+    client.go(); //begin the connection
+    /*
     String start = "BOARD 1 0 (9, 5) (10, 5) (10, 6) (11, 5) (11, 6) (11, 7) (12, 5) (12, 6) (12, 7) (12, 8)";
     String rand1 = "BOARD 6 0 (14, 8) (15, 5) (17, 7) (19, 14) (20, 6) (22, 12)";
     readGrid(start);
@@ -33,8 +37,7 @@ public class ChineseCheckers {
       System.out.println("Score: " + getScore(friendlyPieces, 0));
       moves++;
     }
-    //Client client = new Client(); //start the client
-    ///client.go(); //begin the connection
+    */
   }
 
   public static void readGrid(String boardMessage) {
@@ -177,9 +180,7 @@ public class ChineseCheckers {
                   ArrayList<ArrayList<int[]>> possibleNextMoves = nextAvailableMoves(r1+2*i, c1+2*j, tempBoard, turn);
                   visited[r1][c1] = 0;
                   for(ArrayList<int[]> possibleNextMoveSet : possibleNextMoves){
-                    ArrayList<int[]> combinedMoveSet = turn;
-                    combinedMoveSet.addAll(possibleNextMoveSet);
-                    moves.add(combinedMoveSet);
+                    moves.add(possibleNextMoveSet);
                   }
                   //System.out.print(move[0] + " " + move[1] + " | ");
                 }

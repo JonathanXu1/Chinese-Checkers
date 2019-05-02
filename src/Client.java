@@ -39,13 +39,15 @@ public class Client {
       output = new PrintWriter(mySocket.getOutputStream()); //assign printwriter to network stream
       System.out.println("Connection made.");
       running = true;
-
     } catch (IOException e) {  //connection error occured
       System.out.println("Connection to Server Failed");
       e.printStackTrace();
     }
 
+
     if(running){
+      output.println();
+      output.flush();
       //Join a room
       boolean joinedRoom = false;
       while (!joinedRoom) {
@@ -63,7 +65,7 @@ public class Client {
 
     //Get server messages sending board and send information to algorithm
     while (running) {
-      String msg = getServerMessage().trim();
+      String msg = getServerMessage();
       if (msg.contains("BOARD")) {
         ChineseCheckers.readGrid(msg);
       }
@@ -108,17 +110,18 @@ public class Client {
   }
 
   private String getServerMessage() {
+    String message = "NULL";
     try {
       if (input.ready()) { //check for an incoming message
-        String message = input.readLine().trim();
-        System.out.println("Server response: " + message);
+        message = input.readLine().trim();
         return message;
       }
     } catch (IOException e) {
       System.out.println("Failed to receive msg from the server");
       e.printStackTrace();
     }
-    return "";
+    System.out.println("Server response: " + message);
+    return message;
   }
 
   public void sendMessage(String msg) {

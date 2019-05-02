@@ -33,7 +33,7 @@ public class ChineseCheckers {
     System.out.println("Score: " + getScore(friendlyPieces, 0));
     moves++;
 
-
+    return("MOVE ");
   }
 
   public void readGrid(String boardMessage) {

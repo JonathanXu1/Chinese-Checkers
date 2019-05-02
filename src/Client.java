@@ -110,18 +110,17 @@ public class Client {
   }
 
   private String getServerMessage() {
-    String message = "NULL";
     try {
       if (input.ready()) { //check for an incoming message
-        message = input.readLine().trim();
+        String message = input.readLine().trim();
+        System.out.println("Server response: " + message);
         return message;
       }
     } catch (IOException e) {
       System.out.println("Failed to receive msg from the server");
       e.printStackTrace();
     }
-    System.out.println("Server response: " + message);
-    return message;
+    return "";
   }
 
   public void sendMessage(String msg) {

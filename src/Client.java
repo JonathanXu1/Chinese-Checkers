@@ -44,7 +44,7 @@ public class Client {
       System.out.println("Connection to Server Failed");
       e.printStackTrace();
     }
-    
+
     if(running){
       //Join a room
       boolean joinedRoom = false;

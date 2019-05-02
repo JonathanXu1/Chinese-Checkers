@@ -26,7 +26,9 @@ public class ChineseCheckers {
     String rand1 = "BOARD 6 0 (14, 8) (15, 5) (17, 7) (19, 14) (20, 6) (22, 12)";
     readGrid(start);
     printGrid(board);
-
+    Client client = new Client(); //start the client
+    client.go(); //begin the connection
+    /*
     System.out.println("Score: " + getScore(friendlyPieces, 0));
     while (!checkWin(board)) {
       int score = findBestMove(0, board, friendlyPieces);
@@ -135,11 +137,11 @@ public class ChineseCheckers {
           lineToPrint += "  ";
           characters += 2;
         } else if (item == 0) {
-          lineToPrint += "●" + " ";
+          lineToPrint += item + " ";
           characters += 2;
         } else {
           lineToPrint += "\033[0;3" + item + "m";
-          lineToPrint += "⬤" + " ";
+          lineToPrint += item + " ";
           characters += 2;
           lineToPrint += "\033[0m";
         }
@@ -168,7 +170,7 @@ public class ChineseCheckers {
             } else if(board[r1+i][c1+j] > 0){
               if(r1+2*i >= 9 && r1+2*i <= 25 && c1+2*j >= 1 && c1+2*j <= 17){ // If in board
                 if(board[r1+2*i][c1+2*j] == 0 && visited[r1+2*i][c1+2*j] == 0) { // If jump is empty and not previously been there
-                  ArrayList<int[]> turn = prevTurn;
+                  ArrayList<int[]> turn = new ArrayList<>(prevTurn);
                   move = new int[]{r1+2*i, c1+2*j};
                   turn.add(move);
                   moves.add(turn);
@@ -212,7 +214,15 @@ public class ChineseCheckers {
       int[] piece = tempFriendlyPieces[i];
       ArrayList<int[]> emptyMoves = new ArrayList<>();
       visited = new int[26][18];
+      System.out.print(piece[0] + " " + piece[1] + ": ");
       ArrayList<ArrayList<int[]>> possibleMoves = nextAvailableMoves(piece[0], piece[1], copyArray(board), emptyMoves);
+      for (int j = 0; j < possibleMoves.size(); j++) {
+        for (int k = 0; k < possibleMoves.get(j).size(); k++) {
+          System.out.print(possibleMoves.get(j).get(k)[0] + " " + possibleMoves.get(j).get(k)[1] + " ,");
+        }
+        System.out.print(" | ");
+      }
+      System.out.println();
       for (int j = 0; j < possibleMoves.size(); j++) {
         ArrayList<int[]> move = possibleMoves.get(j);
         int[] finalPos = move.get(move.size() - 1);

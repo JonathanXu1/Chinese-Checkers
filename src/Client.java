@@ -88,6 +88,8 @@ public class Client {
     String roomName = keyboardScanner.nextLine();
     sendMessage("JOINROOM " + roomName);
     String msg = getServerMessage();
+    msg = getServerMessage();
+    System.out.println(msg);
     if (msg.contains("ERROR")) {
       System.out.println(msg);
       return false;

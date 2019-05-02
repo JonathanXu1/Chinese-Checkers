@@ -31,7 +31,7 @@ public class Client {
     System.out.println("Attempting to make a connection..");
 
     try {
-      mySocket = new Socket("localhost", 6666); //attempt socket connection (local address). This will wait until a connection is made
+      mySocket = new Socket("10.242.174.205", 6666); //attempt socket connection (local address). This will wait until a connection is made
 
       InputStreamReader stream1 = new InputStreamReader(mySocket.getInputStream()); //Stream for network input
       input = new BufferedReader(stream1);
@@ -57,11 +57,11 @@ public class Client {
       String msg = getServerMessage();
       if (msg.contains("BOARD")) {
         algorithm.readGrid(msg);
+        if(!algorithm.checkWin());
+        String output = algorithm.makeMove();
+        sendMessage(output);
+        System.out.println("Post to server: " + output);
       }
-      if(!algorithm.checkWin());
-      String output = algorithm.makeMove();
-      sendMessage(output);
-      System.out.println("Post to server: " + output);
     }
 
     //Close sockets and IO

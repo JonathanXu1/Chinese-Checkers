@@ -27,8 +27,8 @@ public class ChineseCheckers {
   public String makeMove(){
     //printGrid(board);
     int score = findBestMove(0, board, friendlyPieces);
-    if (score != -42069) {
-      move(currentBestMove);
+    if (score == -42069) {
+      // No valid moves
     }
     //System.out.println("Score: " + getScore(friendlyPieces, 0));
     moves++;
@@ -41,6 +41,15 @@ public class ChineseCheckers {
   }
 
   public void readGrid(String boardMessage) {
+    // Resets board
+    for(int i = 0; i < 26; i++){
+      for(int j = 0; j < 18; j++){
+        if(board[i][j] > 0){
+          board[i][j] = 0;
+        }
+      }
+    }
+
     String[] boardInfo = boardMessage.split("\\s*[)] [(]|[)]|[(]\\s*");
     int playersRemaining = Integer.parseInt(boardInfo[0].split(" ")[1]);
     int piecesProcessed = 0;
@@ -50,8 +59,13 @@ public class ChineseCheckers {
       int row = Integer.parseInt(piece.split(",")[0]);
       int col = Integer.parseInt(piece.split(",")[1]);
       board[row][col] = (piecesProcessed / 10) + 1;
+      if(piecesProcessed/10 == 0){
+        int[] coordinate = {row, col};
+        friendlyPieces[piecesProcessed%10] = coordinate;
+      }
       piecesProcessed++;
     }
+    printGrid();
   }
 
   private void initGrid() {
@@ -66,15 +80,6 @@ public class ChineseCheckers {
         } else {
           board[i][j] = -1;
         }
-      }
-    }
-    // Loads up piece positions
-    int pieceNum = 0;
-    for(int i = 9; i<=12; i++){
-      for(int j = 5; j <= i-4; j++){
-        int[] coordinates = {i, j};
-        friendlyPieces[pieceNum] = coordinates;
-        pieceNum ++;
       }
     }
   }
@@ -116,7 +121,7 @@ public class ChineseCheckers {
   //
   // TESTING FUNCTION
   //
-  private void printGrid(int[][] board) {
+  private void printGrid() {
     System.out.println("____________________________");
     int rowNum = 0;
     for (int[] row: board) {
@@ -253,21 +258,6 @@ public class ChineseCheckers {
       return -42069;
     }
     return maxVal;
-  }
-
-  private void move (ArrayList<int[]> moveSet) {
-    int[] initialPos = moveSet.get(0);
-    int[] finalPos = moveSet.get(moveSet.size() - 1);
-    board[finalPos[0]][finalPos[1]] = board[initialPos[0]][initialPos[1]];
-    board[initialPos[0]][initialPos[1]] = 0;
-
-    // Change array of friendly pieces to match move done
-    for (int[] piece: friendlyPieces) {
-      if (piece[0] == initialPos[0] && piece[1] == initialPos[1]) {
-        piece[0] = finalPos[0];
-        piece[1] = finalPos[1];
-      }
-    }
   }
 
   private int[][] copyArray (int[][] board) {

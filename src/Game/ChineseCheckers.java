@@ -16,7 +16,7 @@ public class ChineseCheckers {
   int[][] board  = new int[26][18];
   int[][] friendlyPieces = new int[10][2];
   ArrayList<int[]>  currentBestMove = new ArrayList<int[]>();
-  int moves = 0;
+  int turn = 0;
   int[][] visited = new int[26][18];
 
   double[] scoreMultiplier = {3, 1, 1, 50, 10};
@@ -28,15 +28,15 @@ public class ChineseCheckers {
   public String makeMove(){
     String output = "MOVE";
 
-    if(moves == 0){ // Default open move right
+    if(turn == 0){ // Default open move right
       output += "(12,8) (13,8)";
-    } else if (moves == 1){ // Default open move left
+    } else if (turn == 1){ // Default open move left
       output += "(12,5) (13,6)";
     } else { // Algorithm
       //printGrid(board);
       double score = findBestMove(0, board, friendlyPieces);
       if (score == -42069) {
-        // No valid moves
+        // No valid turn
       }
       System.out.println("Score: " + getScore(friendlyPieces, 0));
 
@@ -44,7 +44,7 @@ public class ChineseCheckers {
         output += " (" + Integer.toString(step[0]) + "," + Integer.toString(step[1]) + ")";
       }
     }
-    moves++;
+    turn++;
     return(output);
   }
 
@@ -144,7 +144,7 @@ public class ChineseCheckers {
     score += piecesAtEnd * scoreMultiplier[3];
 
     // Subtract turns taken
-    score -= (moves + turnNum) * scoreMultiplier[4];
+    score -= (turn + turnNum) * scoreMultiplier[4];
     return score;
   }
 
@@ -196,7 +196,7 @@ public class ChineseCheckers {
     ArrayList<ArrayList<int[]>> moves = new ArrayList<>();
     int[] move;
     //System.out.print(r1 + " " + c1 + ": ");
-    // Checks adjacent moves and jump moves
+    // Checks adjacent turn and jump turn
     for(int i = -1; i <= 1; i++){
       for(int j = -1; j <= 1; j++){
         if(r1+i >= 9 && r1+i <= 25 && c1+j >= 1 && c1+j <= 17){ // If in board
@@ -232,10 +232,10 @@ public class ChineseCheckers {
         }
       }
     }
-    //System.out.println("Possible moves for piece at " + r1 + " " + c1);
+    //System.out.println("Possible turn for piece at " + r1 + " " + c1);
     /*
-    for(int i = 0; i < moves.size(); i++){
-      System.out.println(moves.get(i)[0] + " " + moves.get(i)[1]);
+    for(int i = 0; i < turn.size(); i++){
+      System.out.println(turn.get(i)[0] + " " + turn.get(i)[1]);
     }*/
     return moves;
   }
@@ -243,7 +243,7 @@ public class ChineseCheckers {
   private double findBestMove (int depth, int[][] board, int[][] friendlyPieces) {
     // Stop recursive search after 3 turns depth
     if (depth >= 3) {
-      return getScore(friendlyPieces, depth - 1 + moves);
+      return getScore(friendlyPieces, depth - 1 + turn);
     }
 
     int[][] tempFriendlyPieces = copyArray(friendlyPieces);
@@ -256,8 +256,7 @@ public class ChineseCheckers {
       visited = new int[26][18];
       //System.out.print(piece[0] + " " + piece[1] + ": ");
       ArrayList<ArrayList<int[]>> possibleMoves = nextAvailableMoves(piece[0], piece[1], copyArray(board), emptyMoves);
-      for (int j = 0; j < possibleMoves.size(); j++) {
-        ArrayList<int[]> move = possibleMoves.get(j);
+      for (ArrayList<int[]> move : possibleMoves) {
         int[] finalPos = move.get(move.size() - 1);
         int[][] tempBoard = copyArray(board);
 
@@ -268,12 +267,12 @@ public class ChineseCheckers {
         // TODO: prevent piece from jumping back and forth
         if (finalPos[0] >= piece[0]) { // Makes piece never move backwards
 
-          // Recursive call, determines score of move depending on potential score of future moves
+          // Recursive call, determines score of move depending on potential score of future turn
           double val = findBestMove(depth + 1, tempBoard, tempFriendlyPieces);
 
-          // If no moves can be made on future board, set val to score of current board
+          // If no turn can be made on future board, set val to score of current board
           if (val == -42069) {
-            val = getScore(friendlyPieces, depth + moves);
+            val = getScore(friendlyPieces, depth + turn);
           }
 
           // Gets max score

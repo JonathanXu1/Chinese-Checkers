@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 
+//TODO: Force a solution if running out of time
+
 /**
 * This class is responsible for playing the game
 *

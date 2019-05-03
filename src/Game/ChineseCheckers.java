@@ -1,3 +1,5 @@
+package Game;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -16,13 +18,10 @@ public class ChineseCheckers {
   ArrayList<int[]>  currentBestMove = new ArrayList<int[]>();
   int moves = 0;
   int[][] visited = new int[26][18];
-  int[] scoreConstants = new int[0];
 
-  // Board configs for testing
-  String start = "BOARD 1 0 (9, 5) (10, 5) (10, 6) (11, 5) (11, 6) (11, 7) (12, 5) (12, 6) (12, 7) (12, 8)";
-  String rand1 = "BOARD 6 0 (14, 8) (15, 5) (17, 7) (19, 14) (20, 6) (22, 12)";
+  double[] scoreMultiplier = {3, 1, 1, 50, 10};
 
-  ChineseCheckers() {
+  public ChineseCheckers() {
     initGrid();
   }
 
@@ -35,7 +34,7 @@ public class ChineseCheckers {
       output += "(12,5) (13,6)";
     } else { // Algorithm
       //printGrid(board);
-      int score = findBestMove(0, board, friendlyPieces);
+      double score = findBestMove(0, board, friendlyPieces);
       if (score == -42069) {
         // No valid moves
       }
@@ -78,6 +77,7 @@ public class ChineseCheckers {
   }
 
   private void initGrid() {
+
     // Manually creates bounds for board
     for (int i = 0; i < 26; i++) {
       for (int j = 0; j < 18; j++ ) {
@@ -93,7 +93,7 @@ public class ChineseCheckers {
     }
   }
 
-  private int getScore(int[][] friendlyPieces, int turnNum){
+  private double getScore(int[][] friendlyPieces, int turnNum){
     // TODO: calculate score for area around piece instead
     int score = 0;
     // Iterate through all friendly pieces
@@ -129,9 +129,9 @@ public class ChineseCheckers {
       int horDistanceFromEnd = (int)Math.abs(c-(r+1.0)/2);
       // Being closer to the end is good
       // Prioritizes pieces that started at the back, hopefully this will bring a 'flip' move pattern
-      score += ((16 - vertDistanceFromEnd)*(startRow-8)*3 + (7 - horDistanceFromEnd)) * 1;
+      score += ((16 - vertDistanceFromEnd)*(startRow-8)*scoreMultiplier[0] + (7 - horDistanceFromEnd)) * scoreMultiplier[1];
       // Being close to friendlies should be scored higher when the piece is closer to the end
-      score += nearbyPieces *1* (16-vertDistanceFromEnd);
+      score += nearbyPieces * (16-vertDistanceFromEnd) * scoreMultiplier[2];
     }
 
     // Pieces at end are good
@@ -141,12 +141,18 @@ public class ChineseCheckers {
         piecesAtEnd ++;
       }
     }
-    score += piecesAtEnd * 50;
+    score += piecesAtEnd * scoreMultiplier[3];
 
     // Subtract turns taken
-    score -= (moves + turnNum) * 10;
-    // TODO: Get suitable multiplier for moves score reduction
+    score -= (moves + turnNum) * scoreMultiplier[4];
     return score;
+  }
+
+  public double[] getScoreMultiplier(){
+    return  scoreMultiplier;
+  }
+  public void setScoreMultiplier(double[] newMultiplier){
+    scoreMultiplier = newMultiplier;
   }
 
   //
@@ -234,14 +240,14 @@ public class ChineseCheckers {
     return moves;
   }
 
-  private int findBestMove (int depth, int[][] board, int[][] friendlyPieces) {
+  private double findBestMove (int depth, int[][] board, int[][] friendlyPieces) {
     // Stop recursive search after 3 turns depth
     if (depth >= 3) {
       return getScore(friendlyPieces, depth - 1 + moves);
     }
 
     int[][] tempFriendlyPieces = copyArray(friendlyPieces);
-    int maxVal = Integer.MIN_VALUE;
+    double maxVal = Double.MIN_VALUE;
 
     // Loop through every move of every friendly piece
     for (int i = 0; i < tempFriendlyPieces.length; i++) {
@@ -263,7 +269,7 @@ public class ChineseCheckers {
         if (finalPos[0] >= piece[0]) { // Makes piece never move backwards
 
           // Recursive call, determines score of move depending on potential score of future moves
-          int val = findBestMove(depth + 1, tempBoard, tempFriendlyPieces);
+          double val = findBestMove(depth + 1, tempBoard, tempFriendlyPieces);
 
           // If no moves can be made on future board, set val to score of current board
           if (val == -42069) {
@@ -285,7 +291,7 @@ public class ChineseCheckers {
     }
 
     // If current board has no move available, return -42069
-    if (maxVal == Integer.MIN_VALUE) {
+    if (maxVal == Double.MIN_VALUE) {
       return -42069;
     }
     return maxVal;

@@ -1,22 +1,20 @@
 package GeneticTraining;
 
+import Game.ChineseCheckers;
+
 public class Personality {
   private double[] genes;
-  private int fitness = 69; //Integer.MAX_VALUE
+  private int fitness = -1;
+  private boolean changedGenes = true;
+
+  private ChineseCheckers algorithm = new ChineseCheckers();
 
   public Personality(int length){
     genes = new double[length];
-  }
-
-  public Personality initalize(){
     for(int i = 0; i < genes.length; i++){
-      if(Math.random() >= 0.5){
-        genes[i] = 1;
-      } else {
-        genes[i] = 0;
-      }
+      genes[i] = Math.random()*50;
     }
-    return this;
+    algorithm.setScoreMultiplier(genes);
   }
 
   public double[] getGenes(){
@@ -24,12 +22,27 @@ public class Personality {
   }
 
   public int getFitness(){
+    if(changedGenes){
+      recalculateFitness();
+    }
     return  fitness;
   }
 
   public void recalculateFitness(){
-    // TODO
     fitness = 0;
-    fitness --;
+    String board = GeneticAlgorithm.BOARD_INIT;
+    while(!algorithm.checkWin() && fitness < 100){
+      algorithm.readGrid(board);
+      String move = algorithm.makeMove();
+      String startPos = move.substring(5,move.indexOf(')') + 1);
+      String stopPos = move.substring(move.lastIndexOf('('));
+      board = board.substring(0, board.indexOf('(')) + startPos + board.substring(board.indexOf(')')+1, board.lastIndexOf('(')) + stopPos;
+      fitness ++;
+    }
+    changedGenes = false;
+  }
+
+  public void setGenesChanged(){
+    changedGenes = true;
   }
 }

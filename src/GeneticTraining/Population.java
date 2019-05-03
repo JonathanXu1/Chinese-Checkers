@@ -10,6 +10,7 @@ public class Population {
   }
 
   public Population intializePopulation(){
+    // TODO: Getter
     for(int i = 0; i < personalities.length; i++){
       personalities[i] = new Personality(GeneticAlgorithm.NUM_GENES);
     }
@@ -22,7 +23,7 @@ public class Population {
   }
 
   public void sortPersonalitiesByFitness(){
-    // Sorts in reverse order since fitness = steps taken
+    // Sorts smallest to largest since fitness = steps taken
     Arrays.sort(personalities, (p1, p2) ->{
       if(p1.getFitness() > p2.getFitness()) return 1;
       else if (p1.getFitness() < p2.getFitness()) return -1;

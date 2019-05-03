@@ -6,12 +6,15 @@ Hopefully can then train between personalities against others
 package GeneticTraining;
 
 public class GeneticAlgorithm{
+
   public static final int POPULATION_SIZE = 8;
-  public static final int NUM_GENES = 10;
+  public static final int NUM_GENES = 5;
   public static final double MUTATION_RATE = 0.20;
   public static final int NUM_ELITE_PERSONALITIES = 1; // Will not be subjected to crossover/mutation
   public static final int TARGET_STEPS = 27; //In 1971, Octave Levenspiel found a solution in 27 moves [Ibid.]; we demonstrate that no shorter solution exists.
   public static final int TOURNAMENT_SELECTION_SIZE = 4;
+
+  public static final String BOARD_INIT = "BOARD 1 0 (9, 5) (10, 5) (10, 6) (11, 5) (11, 6) (11, 7) (12, 5) (12, 6) (12, 7) (12, 8)";
 
   public Population evolve(Population population){
     return mutatePopulation(crossoverPopulation(population));
@@ -65,9 +68,9 @@ public class GeneticAlgorithm{
     for(int i = 0; i < personality.getGenes().length; i++){
       if(Math.random() < MUTATION_RATE){
         if(Math.random() < 0.5){
-          mutated.getGenes()[i] += 0.5;
+          mutated.getGenes()[i] = personality.getGenes()[i] + 0.5;
         } else {
-          mutated.getGenes()[i] -= 0.5;
+          mutated.getGenes()[i] = personality.getGenes()[i] - 0.5;
         }
       } else {
         mutated.getGenes()[i] = personality.getGenes()[i];

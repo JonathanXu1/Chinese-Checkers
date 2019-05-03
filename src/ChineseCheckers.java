@@ -14,7 +14,7 @@ public class ChineseCheckers {
   ArrayList<int[]>  currentBestMove = new ArrayList<int[]>();
   int moves = 0;
   int[][] visited = new int[26][18];
-  // TODO: Implement move count tracking
+  int[] scoreConstants = new int[0];
 
   // Board configs for testing
   String start = "BOARD 1 0 (9, 5) (10, 5) (10, 6) (11, 5) (11, 6) (11, 7) (12, 5) (12, 6) (12, 7) (12, 8)";
@@ -95,29 +95,41 @@ public class ChineseCheckers {
     // TODO: calculate score for area around piece instead
     int score = 0;
     // Iterate through all friendly pieces
-    for(int[] piece:friendlyPieces){
-        int i = piece[0]; // Row
-        int j = piece[1]; // Column
-        // Checks for nearby friendly pieces
-        int nearbyPieces = 0;
-        for(int v = -1; v <=1; v++){
-          for(int h = -1; h <=1; h++){
-            if(i+v >= 9 && i+v <= 25 && j+h >= 1 && j+h <= 17) { // If in board
-              if((v==-1 && h!=1) || (v==0 && h!=0) || (v==1 && h!=-1)) { // Excludes j=1:r-1, j=0:r+0, j=-1:i=1
-                if(board[i+v][j+h] == 1){ // If friendly
-                  nearbyPieces ++;
-                }
+    for(int i = 0; i < friendlyPieces.length; i++){
+      int r = friendlyPieces[i][0]; // Row
+      int c = friendlyPieces[i][1]; // Column
+      // Checks for nearby friendly pieces
+      int nearbyPieces = 0;
+      for(int v = -1; v <=1; v++){
+        for(int h = -1; h <=1; h++){
+          if(r+v >= 9 && r+v <= 25 && c+h >= 1 && c+h <= 17) { // If in board
+            if((v==-1 && h!=1) || (v==0 && h!=0) || (v==1 && h!=-1)) { // Excludes j=1:r-1, j=0:r+0, j=-1:i=1
+              if(board[r+v][c+h] == 1){ // If friendly
+                nearbyPieces ++;
               }
             }
           }
         }
-        // Finds distance from end (in steps)
-        int vertDistanceFromEnd = 25 - i; // V distance from bottom + H distance to center line
-        int horDistanceFromEnd = (int)Math.abs(j-(i+1.0)/2);
-        // Being closer to the end is good
-        score += ((16 - vertDistanceFromEnd)*5 + (7 - horDistanceFromEnd)) * 3;
-        // Being close to friendlies should be scored higher when the piece is closer to the end
-        score += nearbyPieces *0.5* (vertDistanceFromEnd);
+      }
+      // Calculates the starting row of the piece (very hardcoded lol)
+      int startRow;
+      if(i >= 6){
+        startRow = 12;
+      } else if(i >= 3){
+        startRow = 11;
+      } else if(i >= 1){
+        startRow = 10;
+      } else{
+        startRow = 9;
+      }
+      // Finds distance from end (in steps)
+      int vertDistanceFromEnd = 25 - i; // V distance from bottom + H distance to center line
+      int horDistanceFromEnd = (int)Math.abs(c-(r+1.0)/2);
+      // Being closer to the end is good
+      // Prioritizes pieces that started at the back, hopefully this will bring a 'flip' move pattern
+      score += ((16 - vertDistanceFromEnd)*(startRow-8)*3 + (7 - horDistanceFromEnd)) * 1;
+      // Being close to friendlies should be scored higher when the piece is closer to the end
+      score += nearbyPieces *1* (16-vertDistanceFromEnd);
     }
 
     // Pieces at end are good

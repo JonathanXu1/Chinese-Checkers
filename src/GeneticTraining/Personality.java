@@ -1,11 +1,11 @@
 package GeneticTraining;
 
 public class Personality {
-  private int[] genes;
+  private double[] genes;
   private int fitness = 69; //Integer.MAX_VALUE
 
   public Personality(int length){
-    genes = new int[length];
+    genes = new double[length];
   }
 
   public Personality initalize(){
@@ -19,7 +19,7 @@ public class Personality {
     return this;
   }
 
-  public int[] getGenes(){
+  public double[] getGenes(){
     return genes;
   }
 

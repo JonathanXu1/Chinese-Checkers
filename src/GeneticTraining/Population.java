@@ -1,6 +1,5 @@
 package GeneticTraining;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Population {
@@ -12,7 +11,7 @@ public class Population {
 
   public Population intializePopulation(){
     for(int i = 0; i < personalities.length; i++){
-      personalities[i] = new Personality(GeneticAlgorithm.TRAIT_NUMS);
+      personalities[i] = new Personality(GeneticAlgorithm.NUM_GENES);
     }
     sortPersonalitiesByFitness();
     return this;

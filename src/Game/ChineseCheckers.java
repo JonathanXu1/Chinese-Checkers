@@ -1,53 +1,66 @@
 package Game;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
 //TODO: Force a solution if running out of time
 
 /**
-* This class is responsible for playing the game
-*
-* @author
-* @since   2019-04-24
-*/
+ * This class is responsible for playing the game
+ *
+ * @author
+ * @since   2019-04-24
+ */
 public class ChineseCheckers {
-  final int DEPTH_LAYER = 3;
-  final int NUM_PLAYERS = 6;
-
+  int DEPTH_LAYER = 3;
+  int NUM_PLAYERS = 6;
   int[][] board  = new int[26][18];
   int[][] friendlyPieces = new int[10][2];
   ArrayList<int[]>  currentBestMove = new ArrayList<int[]>();
-  int turn = 0;
+  int moves = 0;
   int[][] visited = new int[26][18];
-
   int[] scoreConstants = new int[0];
   double startTime = System.nanoTime()/1000000000.0;
   double scoreTime = 0;
   double availTime = 0;
   double arrayCopyTime = 0;
-
   double[] scoreMultiplier = {3, 1, 1, 50, 10};
+
+  // Board configs for testing
+  String start = "BOARD 1 0 (9, 5) (10, 5) (10, 6) (11, 5) (11, 6) (11, 7) (12, 5) (12, 6) (12, 7) (12, 8)";
+  String rand1 = "BOARD 6 0 (14, 8) (15, 5) (17, 7) (19, 14) (20, 6) (22, 12)";
 
   public ChineseCheckers() {
     initGrid();
   }
 
-  public String makeMove(){
-    String output = "MOVE";
+  public double[] getScoreMultiplier(){
+    return  scoreMultiplier;
+  }
+  public void setScoreMultiplier(double[] newMultiplier){
+    scoreMultiplier = newMultiplier;
+  }
 
-    if(turn == 0){ // Default open move right
+  public String makeMove(){
+    startTime = System.nanoTime()/1000000000.0;
+    System.out.println("Start Timer.");
+    String output = "MOVE";
+    startTime = System.nanoTime()/1000000000.0;
+    scoreTime = 0;
+    availTime = 0;
+    arrayCopyTime = 0;
+
+    if(moves == 0){ // Default open move right
       output += "(12,8) (13,8)";
-    } else if (turn == 1){ // Default open move left
+    } else if (moves == 1){ // Default open move left
       output += "(12,5) (13,6)";
     } else { // Algorithm
       //printGrid(board);
       System.out.println("Start alg " + (System.nanoTime()/1000000000.0 - startTime));
       double score = findBestMove(0, board, friendlyPieces);
       if (score == -42069) {
-        // No valid turn
+        // No valid moves
       }
-      //System.out.println("Score: " + getScore(friendlyPieces, 0));
+      System.out.println("Score: " + getScore(friendlyPieces, 0));
 
       for(int[] step:currentBestMove){
         output += " (" + Integer.toString(step[0]) + "," + Integer.toString(step[1]) + ")";
@@ -57,7 +70,7 @@ public class ChineseCheckers {
     System.out.println("Score time: " + scoreTime);
     System.out.println("Available moves time: " + availTime);
     System.out.println("Copy array time: " + arrayCopyTime);
-    turn++;
+    moves++;
     return(output);
   }
 
@@ -86,11 +99,10 @@ public class ChineseCheckers {
       }
       piecesProcessed++;
     }
-    //printGrid();
+    printGrid();
   }
 
   private void initGrid() {
-
     // Manually creates bounds for board
     for (int i = 0; i < 26; i++) {
       for (int j = 0; j < 18; j++ ) {
@@ -108,7 +120,7 @@ public class ChineseCheckers {
 
   private double getScore(int[][] friendlyPieces, int turnNum){
     // TODO: calculate score for area around piece instead
-    int score = 0;
+    double score = 0;
     // Iterate through all friendly pieces
     for(int i = 0; i < friendlyPieces.length; i++){
       int r = friendlyPieces[i][0]; // Row
@@ -138,13 +150,13 @@ public class ChineseCheckers {
         startRow = 9;
       }
       // Finds distance from end (in steps)
-      int vertDistanceFromEnd = 25 - r; // V distance from bottom + H distance to center line
+      int vertDistanceFromEnd = 25 - i; // V distance from bottom + H distance to center line
       int horDistanceFromEnd = (int)Math.abs(c-(r+1.0)/2);
       // Being closer to the end is good
       // Prioritizes pieces that started at the back, hopefully this will bring a 'flip' move pattern
-      score += ((16 - vertDistanceFromEnd)*(startRow-8)*scoreMultiplier[0] + (7 - horDistanceFromEnd)) * scoreMultiplier[1];
+      score += ((16 - vertDistanceFromEnd)*(startRow-8)*3 + (7 - horDistanceFromEnd)) * 1;
       // Being close to friendlies should be scored higher when the piece is closer to the end
-      score += nearbyPieces * (16-vertDistanceFromEnd) * scoreMultiplier[2];
+      score += nearbyPieces *1* (16-vertDistanceFromEnd);
     }
 
     // Pieces at end are good
@@ -154,18 +166,12 @@ public class ChineseCheckers {
         piecesAtEnd ++;
       }
     }
-    score += piecesAtEnd * scoreMultiplier[3];
+    score += piecesAtEnd * 50;
 
     // Subtract turns taken
-    score -= (turn + turnNum) * scoreMultiplier[4];
+    score -= (moves + turnNum) * 10;
+    // TODO: Get suitable multiplier for moves score reduction
     return score;
-  }
-
-  public double[] getScoreMultiplier(){
-    return  scoreMultiplier;
-  }
-  public void setScoreMultiplier(double[] newMultiplier){
-    scoreMultiplier = newMultiplier;
   }
 
   //
@@ -209,7 +215,7 @@ public class ChineseCheckers {
     ArrayList<ArrayList<int[]>> moves = new ArrayList<>();
     int[] move;
     //System.out.print(r1 + " " + c1 + ": ");
-    // Checks adjacent turn and jump turn
+    // Checks adjacent moves and jump moves
     for(int i = -1; i <= 1; i++){
       for(int j = -1; j <= 1; j++){
         if(r1+i >= 9 && r1+i <= 25 && c1+j >= 1 && c1+j <= 17){ // If in board
@@ -222,15 +228,14 @@ public class ChineseCheckers {
                 moves.add(turn);
                 //System.out.print(move[0] + " " + move[1] + " | ");
               }
+              //System.out.print(move[0] + " " + move[1] + " | ");
             } else if(board[r1+i][c1+j] > 0){
               if(r1+2*i >= 9 && r1+2*i <= 25 && c1+2*j >= 1 && c1+2*j <= 17){ // If in board
                 if(board[r1+2*i][c1+2*j] == 0 && visited[r1+2*i][c1+2*j] == 0) { // If jump is empty and not previously been there
                   ArrayList<int[]> turn = new ArrayList<>(prevTurn);
                   move = new int[]{r1+2*i, c1+2*j};
                   turn.add(move);
-                  if(checkLegalGoalArea(r1+2*i, c1+2*j)){
-                    moves.add(turn);
-                  }
+                  moves.add(turn);
                   board[r1][c1] = 0;
                   board[r1+2*i][c1+2*j] = 1;
                   visited[r1][c1] = 1;
@@ -241,20 +246,21 @@ public class ChineseCheckers {
                     moves.add(possibleNextMoveSet);
                   }
                   //System.out.print(move[0] + " " + move[1] + " | ");
+
+                  //revert changes made
+                  board[r1][c1] = 1;
+                  board[r1+2*i][c1+2*j] = 0;
                 }
-                //revert changes
-                board[r1][c1] = 1;
-                board[r1+2*i][c1+2*j] = 0;
               }
             }
           }
         }
       }
     }
-    //System.out.println("Possible turn for piece at " + r1 + " " + c1);
+    //System.out.println("Possible moves for piece at " + r1 + " " + c1);
     /*
-    for(int i = 0; i < turn.size(); i++){
-      System.out.println(turn.get(i)[0] + " " + turn.get(i)[1]);
+    for(int i = 0; i < moves.size(); i++){
+      System.out.println(moves.get(i)[0] + " " + moves.get(i)[1]);
     }*/
     return moves;
   }
@@ -264,7 +270,7 @@ public class ChineseCheckers {
     if (depth >= DEPTH_LAYER) {
       double time = System.nanoTime()/1000000000.0;
       //System.out.println((System.nanoTime()/1000000000.0 - startTime) + "depth: " + depth + "start Score");
-      double score = getScore(friendlyPieces, depth - 1 + turn);
+      double score = getScore(friendlyPieces, depth - 1 + moves);
       //System.out.println((System.nanoTime()/1000000000.0 - startTime) + "depth: " + depth + "stop Score");
       scoreTime += System.nanoTime()/1000000000.0 - time;
 
@@ -277,6 +283,9 @@ public class ChineseCheckers {
     // Loop through every move of every friendly piece
     for (int i = 0; i < friendlyPieces.length; i++) {
       int[] piece = friendlyPieces[i];
+      time = System.nanoTime()/1000000000.0;
+      //System.out.println((System.nanoTime()/1000000000.0 - startTime) + "depth: " + depth + "start find possible moves");
+
       ArrayList<int[]> emptyMoves = new ArrayList<>();
       visited = new int[26][18];
       //System.out.print(piece[0] + " " + piece[1] + ": ");
@@ -287,22 +296,21 @@ public class ChineseCheckers {
       for (int j = 0; j < possibleMoves.size(); j++) {
         ArrayList<int[]> move = possibleMoves.get(j);
         int[] finalPos = move.get(move.size() - 1);
+        time = System.nanoTime()/1000000000.0;
+        arrayCopyTime += System.nanoTime()/1000000000.0 - time;
 
         // Make move on copy of board
         board[finalPos[0]][finalPos[1]] = 1;
         board[piece[0]][piece[1]] = 0;
         friendlyPieces[i] = finalPos;
         // TODO: prevent piece from jumping back and forth
-        if (finalPos[0] > piece[0]) { // Makes piece never move backwards
+        if (finalPos[0] >= piece[0]) { // Makes piece never move backwards
 
           // Recursive call, determines score of move depending on potential score of future moves
           double val = findBestMove(depth + 1, board, friendlyPieces);
-
-          // If no turn can be made on future board, set val to score of current board
           if (val == -42069) {
-            val = getScore(friendlyPieces, depth + turn);
+            val = getScore(friendlyPieces, depth + moves);
           }
-
           // Gets max score
           maxVal = Math.max(maxVal, val);
 
@@ -315,24 +323,18 @@ public class ChineseCheckers {
 
         }
 
-        //Revert back
+        //Revert changes made
         board[finalPos[0]][finalPos[1]] = 0;
         board[piece[0]][piece[1]] = 1;
         friendlyPieces[i] = piece;
       }
     }
 
-    return maxVal;
-  }
-
-  private int[][] copyArray (int[][] board) {
-    int[][] copy = new int[board.length][board[0].length];
-    for (int i = 0; i < board.length; i++) {
-      for (int j = 0; j < board[0].length; j++) {
-        copy[i][j] = board[i][j];
-      }
+    // If current board has no move available, return -42069
+    if (maxVal == Integer.MIN_VALUE) {
+      return -42069;
     }
-    return copy;
+    return maxVal;
   }
 
   public boolean checkWin(){

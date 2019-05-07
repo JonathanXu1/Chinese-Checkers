@@ -149,9 +149,9 @@ public class ChineseCheckers {
         startRow = 9;
       }
       // Finds distance from end (in steps)
-      int vertDistanceFromEnd = 25 - i; // V distance from bottom + H distance to center line
-      int horDistanceFromEnd = (int)Math.abs(c-(r+1.0)/2);
-      score += vertDistanceFromEnd - horDistanceFromEnd / 2.0; 
+      int vertDistanceFromEnd = 25 - r; // V distance from bottom + H distance to center line
+      // int horDistanceFromEnd = (int)Math.abs(c-(r+1.0)/2);
+      score += vertDistanceFromEnd; 
     }
 
     // Pieces at end are good
@@ -161,7 +161,7 @@ public class ChineseCheckers {
         endPieceBonus += pieceCoordinate[0] / 2;
       }
     }
-    score += endPieceBonus;
+    // score += endPieceBonus;
 
     // // Subtract turns taken
     // score -= (moves + turnNum) * 10;

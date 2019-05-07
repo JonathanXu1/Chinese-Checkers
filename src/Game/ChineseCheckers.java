@@ -16,7 +16,7 @@ public class ChineseCheckers {
   int[][] board  = new int[26][18];
   int[][] friendlyPieces = new int[10][2];
   ArrayList<int[]>  currentBestMove = new ArrayList<int[]>();
-  int moves = 0;
+  int turnNum = 0;
   int[][] visited = new int[26][18];
   int[] scoreConstants = new int[0];
   double startTime = System.nanoTime()/1000000000.0;
@@ -49,18 +49,18 @@ public class ChineseCheckers {
     availTime = 0;
     arrayCopyTime = 0;
 
-    if(moves == 0){ // Default open move right
+    if(turnNum == 0){ // Default open move right
       output += "(12,8) (13,8)";
-    } else if (moves == 1){ // Default open move left
+    } else if (turnNum == 1){ // Default open move left
       output += "(12,5) (13,6)";
     } else { // Algorithm
       //printGrid(board);
       //System.out.println("Start alg " + (System.nanoTime()/1000000000.0 - startTime));
       double score = findBestMove(0, board, friendlyPieces);
       if (score == -42069) {
-        // No valid moves
+        // No valid turnNum
       }
-      //System.out.println("Score: " + getScore(friendlyPieces, 0));
+      System.out.println("Score: " + score);
 
       for(int[] step:currentBestMove){
         output += " (" + Integer.toString(step[0]) + "," + Integer.toString(step[1]) + ")";
@@ -68,9 +68,10 @@ public class ChineseCheckers {
     }
     //System.out.println("total time: " + (System.nanoTime()/1000000000.0 - startTime));
     //System.out.println("Score time: " + scoreTime);
-    //System.out.println("Available moves time: " + availTime);
+    //System.out.println("Available turnNum time: " + availTime);
     //System.out.println("Copy array time: " + arrayCopyTime);
-    moves++;
+    turnNum++;
+    System.out.println("Move num: " + turnNum);
     return(output);
   }
 
@@ -118,7 +119,8 @@ public class ChineseCheckers {
     }
   }
 
-  private double getScore(int[][] friendlyPieces, int turnNum){
+  private double getScore(int[][] friendlyPieces, int step){
+    //System.out.println("Scoredepth: " + step);
     double score = 0;
     // Iterate through all friendly pieces
     for (int i = 0; i < friendlyPieces.length; i++) {
@@ -149,7 +151,7 @@ public class ChineseCheckers {
         startRow = 9;
       }
       // Finds distance from end (in steps)
-      int vertDistanceFromEnd = 25 - i; // V distance from bottom + H distance to center line
+      int vertDistanceFromEnd = 25 - r; // V distance from bottom + H distance to center line
       int horDistanceFromEnd = (int)Math.abs(c-(r+1.0)/2);
       score += vertDistanceFromEnd - horDistanceFromEnd / 2.0; 
     }
@@ -163,9 +165,11 @@ public class ChineseCheckers {
     }
     score += endPieceBonus;
 
+    score -= step *2;
+
     // // Subtract turns taken
-    // score -= (moves + turnNum) * 10;
-    // TODO: Get suitable multiplier for moves score reduction
+    // score -= (turnNum + turnNum) * 10;
+    // TODO: Get suitable multiplier for turnNum score reduction
     return score;
   }
 
@@ -210,7 +214,7 @@ public class ChineseCheckers {
     ArrayList<ArrayList<int[]>> moves = new ArrayList<>();
     int[] move;
     //System.out.print(r1 + " " + c1 + ": ");
-    // Checks adjacent moves and jump moves
+    // Checks adjacent turnNum and jump turnNum
     for(int i = -1; i <= 1; i++){
       for(int j = -1; j <= 1; j++){
         if(r1+i >= 9 && r1+i <= 25 && c1+j >= 1 && c1+j <= 17){ // If in board
@@ -252,10 +256,10 @@ public class ChineseCheckers {
         }
       }
     }
-    //System.out.println("Possible moves for piece at " + r1 + " " + c1);
+    //System.out.println("Possible turnNum for piece at " + r1 + " " + c1);
     /*
-    for(int i = 0; i < moves.size(); i++){
-      System.out.println(moves.get(i)[0] + " " + moves.get(i)[1]);
+    for(int i = 0; i < turnNum.size(); i++){
+      System.out.println(turnNum.get(i)[0] + " " + turnNum.get(i)[1]);
     }*/
     return moves;
   }
@@ -265,7 +269,7 @@ public class ChineseCheckers {
     if (depth >= DEPTH_LAYER) {
       double time = System.nanoTime()/1000000000.0;
       //System.out.println((System.nanoTime()/1000000000.0 - startTime) + "depth: " + depth + "start Score");
-      double score = getScore(friendlyPieces, depth - 1 + moves);
+      double score = getScore(friendlyPieces, depth - 1 + turnNum);
       //System.out.println((System.nanoTime()/1000000000.0 - startTime) + "depth: " + depth + "stop Score");
       scoreTime += System.nanoTime()/1000000000.0 - time;
 
@@ -279,13 +283,13 @@ public class ChineseCheckers {
     for (int i = 0; i < friendlyPieces.length; i++) {
       int[] piece = friendlyPieces[i];
       time = System.nanoTime()/1000000000.0;
-      //System.out.println((System.nanoTime()/1000000000.0 - startTime) + "depth: " + depth + "start find possible moves");
+      //System.out.println((System.nanoTime()/1000000000.0 - startTime) + "depth: " + depth + "start find possible turnNum");
 
       ArrayList<int[]> emptyMoves = new ArrayList<>();
       visited = new int[26][18];
       //System.out.print(piece[0] + " " + piece[1] + ": ");
       ArrayList<ArrayList<int[]>> possibleMoves = nextAvailableMoves(piece[0], piece[1], board, emptyMoves);
-      //System.out.println((System.nanoTime()/1000000000.0 - startTime) + "depth: " + depth + "stop find possible moves");
+      //System.out.println((System.nanoTime()/1000000000.0 - startTime) + "depth: " + depth + "stop find possible turnNum");
       availTime += System.nanoTime()/1000000000.0 - time;
 
       for (int j = 0; j < possibleMoves.size(); j++) {
@@ -301,10 +305,10 @@ public class ChineseCheckers {
         // TODO: prevent piece from jumping back and forth
         if (finalPos[0] >= piece[0]) { // Makes piece never move backwards
 
-          // Recursive call, determines score of move depending on potential score of future moves
+          // Recursive call, determines score of move depending on potential score of future turnNum
           double val = findBestMove(depth + 1, board, friendlyPieces);
           if (val == -42069) {
-            val = getScore(friendlyPieces, depth + moves);
+            val = getScore(friendlyPieces, depth + turnNum);
           }
           // Gets max score
           maxVal = Math.max(maxVal, val);

@@ -180,11 +180,11 @@ public class ChineseCheckers {
           lineToPrint += "  ";
           characters += 2;
         } else if (item == 0) {
-          lineToPrint += item + " ";
+          lineToPrint += "○" + " ";
           characters += 2;
         } else {
           lineToPrint += "\033[0;3" + item + "m";
-          lineToPrint += item + " ";
+          lineToPrint += "⬤" + " ";
           characters += 2;
           lineToPrint += "\033[0m";
         }

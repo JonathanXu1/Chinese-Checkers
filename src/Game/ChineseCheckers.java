@@ -278,18 +278,17 @@ public class ChineseCheckers {
 
   private double findBestMove (int depth, int[][] board, int[][] friendlyPieces) {
     if (checkWin()) {
-      if (depth == 1) {
         System.out.println("win win win");
-        return 10000000;
+        return 10000000 / depth;
       } /*else if (depth ==2) {
         System.out.println("win win");
         return 1000000;
       } else if (depth == 3) {
         System.out.println("win");
         return 100000;
-      }
-      */
-    }
+      }*/
+
+
     // Stop recursive search after 3 turns depth
     if (depth >= depthLayer) {
       double time = System.nanoTime()/1000000000.0;
@@ -339,8 +338,9 @@ public class ChineseCheckers {
           if (maxVal == val && depth == 0) {
             move.add(0, piece);
             currentBestMove = move;
+            System.out.println(depth + "  " + maxVal + " (" + currentBestMove.get(0)[0] + "," + currentBestMove.get(0)[1] + ") (" + currentBestMove.get(currentBestMove.size() - 1)[0] + "," + currentBestMove.get(currentBestMove.size() - 1)[1] + ")");
+
           }
-          //System.out.println(depth + "  " + maxVal + " " + currentBestMove[0][0] + " " + currentBestMove[0][1] + " " + currentBestMove[1][0] + " " + currentBestMove[1][1]);
 
         }
 

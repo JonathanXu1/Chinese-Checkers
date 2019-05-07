@@ -50,14 +50,8 @@ public class ChineseCheckers {
     availTime = 0;
     arrayCopyTime = 0;
 
-    // Adjusts depth perception over time
-    if(moves > 20 && moves < 30 && depthLayer > 2){
-      depthLayer --;
-    } /*else if(moves >30 && depthLayer >1){
-      depthLayer --;
-    }*/
-
-
+    // Adjusts depth perception over time (3,2,1)
+    depthLayer = 3 - moves%3;
 
     if(moves == 0){ // Default open move right
       output += "(12,8) (13,8)";
@@ -243,24 +237,26 @@ public class ChineseCheckers {
             } else if(board[r1+i][c1+j] > 0){
               if(r1+2*i >= 9 && r1+2*i <= 25 && c1+2*j >= 1 && c1+2*j <= 17){ // If in board
                 if(board[r1+2*i][c1+2*j] == 0 && visited[r1+2*i][c1+2*j] == 0) { // If jump is empty and not previously been there
-                  ArrayList<int[]> turn = new ArrayList<>(prevTurn);
-                  move = new int[]{r1+2*i, c1+2*j};
-                  turn.add(move);
-                  moves.add(turn);
-                  board[r1][c1] = 0;
-                  board[r1+2*i][c1+2*j] = 1;
-                  visited[r1][c1] = 1;
-                  //Iterates through each jump to find combinations of jumps
-                  ArrayList<ArrayList<int[]>> possibleNextMoves = nextAvailableMoves(r1+2*i, c1+2*j, board, turn);
-                  visited[r1][c1] = 0;
-                  for(ArrayList<int[]> possibleNextMoveSet : possibleNextMoves){
-                    moves.add(possibleNextMoveSet);
-                  }
-                  //System.out.print(move[0] + " " + move[1] + " | ");
+                  if(checkLegalGoalArea(r1+i*2, c1+j*2)){
+                    ArrayList<int[]> turn = new ArrayList<>(prevTurn);
+                    move = new int[]{r1+2*i, c1+2*j};
+                    turn.add(move);
+                    moves.add(turn);
+                    board[r1][c1] = 0;
+                    board[r1+2*i][c1+2*j] = 1;
+                    visited[r1][c1] = 1;
+                    //Iterates through each jump to find combinations of jumps
+                    ArrayList<ArrayList<int[]>> possibleNextMoves = nextAvailableMoves(r1+2*i, c1+2*j, board, turn);
+                    visited[r1][c1] = 0;
+                    for(ArrayList<int[]> possibleNextMoveSet : possibleNextMoves){
+                      moves.add(possibleNextMoveSet);
+                    }
+                    //System.out.print(move[0] + " " + move[1] + " | ");
 
-                  //revert changes made
-                  board[r1][c1] = 1;
-                  board[r1+2*i][c1+2*j] = 0;
+                    //revert changes made
+                    board[r1][c1] = 1;
+                    board[r1+2*i][c1+2*j] = 0;
+                  }
                 }
               }
             }
@@ -279,15 +275,8 @@ public class ChineseCheckers {
   private double findBestMove (int depth, int[][] board, int[][] friendlyPieces) {
     if (checkWin()) {
         System.out.println("win win win");
-        return 10000000 / depth;
-      } /*else if (depth ==2) {
-        System.out.println("win win");
-        return 1000000;
-      } else if (depth == 3) {
-        System.out.println("win");
-        return 100000;
-      }*/
-
+        return 10000000;
+    }
 
     // Stop recursive search after 3 turns depth
     if (depth >= depthLayer) {
@@ -371,10 +360,10 @@ public class ChineseCheckers {
 
   private boolean checkLegalGoalArea(int r, int c){
     boolean legal = true;
-    if(r <=17 &&(c<5 || c >r-4)){
+    if(r <17 &&(c<5 || c >r-4)){
       legal = false;
     }
-    if(r >=17 && (c<r-12 || c>13)){
+    if(r >17 && (c<r-12 || c>13)){
       legal = false;
     }
     return legal;

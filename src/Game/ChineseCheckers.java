@@ -22,10 +22,6 @@ public class ChineseCheckers {
   int[] scoreConstants = new int[0];
   double[] scoreMultiplier = {3, 1, 1, 50, 10};
 
-  // Board configs for testing
-  String start = "BOARD 1 0 (9, 5) (10, 5) (10, 6) (11, 5) (11, 6) (11, 7) (12, 5) (12, 6) (12, 7) (12, 8)";
-  String rand1 = "BOARD 6 0 (14, 8) (15, 5) (17, 7) (19, 14) (20, 6) (22, 12)";
-
   public ChineseCheckers() {
     initGrid();
   }
@@ -251,7 +247,7 @@ public class ChineseCheckers {
   private double findBestMove(int depth) {
     if (checkWin()) {
       System.out.println("win win win");
-      return 10000000;
+      return Integer.MAX_VALUE;
     }
 
     // Stop recursive search after 3 turns depth

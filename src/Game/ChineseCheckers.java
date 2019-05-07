@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 //TODO: Force a solution if running out of time
+//TODO: Look at fewer depths as time passes on
 
 /**
  * This class is responsible for playing the game
@@ -11,7 +12,7 @@ import java.util.Arrays;
  * @since   2019-04-24
  */
 public class ChineseCheckers {
-  int DEPTH_LAYER = 3;
+  int depthLayer = 3;
   int NUM_PLAYERS = 6;
   int[][] board  = new int[26][18];
   int[][] friendlyPieces = new int[10][2];
@@ -48,6 +49,15 @@ public class ChineseCheckers {
     scoreTime = 0;
     availTime = 0;
     arrayCopyTime = 0;
+
+    // Adjusts depth perception over time
+    if(moves > 20 && moves < 30 && depthLayer > 2){
+      depthLayer --;
+    } else if(moves >30 && depthLayer >1){
+      depthLayer --;
+    }
+
+
 
     if(moves == 0){ // Default open move right
       output += "(12,8) (13,8)";
@@ -268,7 +278,7 @@ public class ChineseCheckers {
 
   private double findBestMove (int depth, int[][] board, int[][] friendlyPieces) {
     // Stop recursive search after 3 turns depth
-    if (depth >= DEPTH_LAYER) {
+    if (depth >= depthLayer) {
       double time = System.nanoTime()/1000000000.0;
       //System.out.println((System.nanoTime()/1000000000.0 - startTime) + "depth: " + depth + "start Score");
       double score = getScore(friendlyPieces, depth - 1 + moves);

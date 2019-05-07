@@ -61,9 +61,6 @@ public class ChineseCheckers {
       //printGrid(board);
       //System.out.println("Start alg " + (System.nanoTime()/1000000000.0 - startTime));
       double score = findBestMove(0, board, friendlyPieces);
-      if (score == -42069) {
-        // No valid moves
-      }
       //System.out.println("Score: " + getScore(friendlyPieces, 0));
 
       for(int[] step:currentBestMove){
@@ -159,6 +156,7 @@ public class ChineseCheckers {
       // Being closer to the end is good
       // Prioritizes pieces that started at the back, hopefully this will bring a 'flip' move pattern
       score += 16 - vertDistanceFromEnd;
+      score -= horDistanceFromEnd*0.5;
       //score += ((16 - vertDistanceFromEnd)*(startRow-8)*3 + (7 - horDistanceFromEnd)) * 1;
       // Being close to friendlies should be scored higher when the piece is closer to the end
       //score += nearbyPieces *1* (16-vertDistanceFromEnd);

@@ -46,7 +46,7 @@ public class Personality {
     String board = GeneticAlgorithm.BOARD_INIT;
     algorithm.readGrid(board);
 
-    while(!algorithm.checkWin() && fitness < 100){
+    while(!algorithm.checkWin() && fitness < 300){
       String move = algorithm.makeMove();
       String startPos = move.substring(move.indexOf('('), move.indexOf(')') + 1);
       String stopPos = move.substring(move.lastIndexOf('('));
@@ -58,7 +58,7 @@ public class Personality {
       System.out.println(stopPos);
       */
       if(!board.contains(startPos)){ // If algorithm cannot find best next move, it breaks
-        fitness = 100;
+        fitness = 300;
       } else {
         board = board.substring(0, board.indexOf(startPos)) + stopPos + board.substring(board.indexOf(startPos) + startPos.length());
         algorithm.readGrid(board);

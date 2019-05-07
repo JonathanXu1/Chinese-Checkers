@@ -42,7 +42,7 @@ public class ChineseCheckers {
       output += "(12,5) (13,6)";
     } else { // Algorithm
       //printGrid(board);
-      System.out.println("Start alg " + (System.nanoTime()/1000000000.0 - startTime));
+      //System.out.println("Start alg " + (System.nanoTime()/1000000000.0 - startTime));
       double score = findBestMove(0, board, friendlyPieces);
       if (score == -42069) {
         // No valid turn
@@ -53,10 +53,10 @@ public class ChineseCheckers {
         output += " (" + Integer.toString(step[0]) + "," + Integer.toString(step[1]) + ")";
       }
     }
-    System.out.println("total time: " + (System.nanoTime()/1000000000.0 - startTime));
-    System.out.println("Score time: " + scoreTime);
-    System.out.println("Available moves time: " + availTime);
-    System.out.println("Copy array time: " + arrayCopyTime);
+    //System.out.println("total time: " + (System.nanoTime()/1000000000.0 - startTime));
+    //System.out.println("Score time: " + scoreTime);
+    //System.out.println("Available moves time: " + availTime);
+    //System.out.println("Copy array time: " + arrayCopyTime);
     turn++;
     return(output);
   }
@@ -86,7 +86,7 @@ public class ChineseCheckers {
       }
       piecesProcessed++;
     }
-    //printGrid();
+    printGrid();
   }
 
   private void initGrid() {

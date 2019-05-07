@@ -150,13 +150,14 @@ public class ChineseCheckers {
         startRow = 9;
       }
       // Finds distance from end (in steps)
-      int vertDistanceFromEnd = 25 - i; // V distance from bottom + H distance to center line
+      int vertDistanceFromEnd = 25 - r; // V distance from bottom + H distance to center line
       int horDistanceFromEnd = (int)Math.abs(c-(r+1.0)/2);
       // Being closer to the end is good
       // Prioritizes pieces that started at the back, hopefully this will bring a 'flip' move pattern
-      score += ((16 - vertDistanceFromEnd)*(startRow-8)*3 + (7 - horDistanceFromEnd)) * 1;
+      score += 16 - vertDistanceFromEnd;
+      //score += ((16 - vertDistanceFromEnd)*(startRow-8)*3 + (7 - horDistanceFromEnd)) * 1;
       // Being close to friendlies should be scored higher when the piece is closer to the end
-      score += nearbyPieces *1* (16-vertDistanceFromEnd);
+      //score += nearbyPieces *1* (16-vertDistanceFromEnd);
     }
 
     // Pieces at end are good
@@ -166,7 +167,7 @@ public class ChineseCheckers {
         piecesAtEnd ++;
       }
     }
-    score += piecesAtEnd * 50;
+    //score += piecesAtEnd * 50;
 
     // Subtract turns taken
     score -= (moves + turnNum) * 10;
@@ -267,7 +268,17 @@ public class ChineseCheckers {
 
   private double findBestMove (int depth, int[][] board, int[][] friendlyPieces) {
     if (checkWin()) {
-      return 10000000;
+      if (depth == 1) {
+        System.out.println("win win win");
+        return 10000000;
+      } /*else if (depth ==2) {
+        System.out.println("win win");
+        return 1000000;
+      } else if (depth == 3) {
+        System.out.println("win");
+        return 100000;
+      }
+      */
     }
     // Stop recursive search after 3 turns depth
     if (depth >= DEPTH_LAYER) {
@@ -329,11 +340,6 @@ public class ChineseCheckers {
         friendlyPieces[i] = piece;
       }
     }
-
-    // If current board has no move available, return -42069
-    if (maxVal == Integer.MIN_VALUE) {
-      return 100000;
-    }
     return maxVal;
   }
 
@@ -364,3 +370,4 @@ public class ChineseCheckers {
     return legal;
   }
 }
+

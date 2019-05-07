@@ -152,8 +152,8 @@ public class ChineseCheckers {
       }
       // Finds distance from end (in steps)
       int vertDistanceFromEnd = 25 - r; // V distance from bottom + H distance to center line
-      int horDistanceFromEnd = (int)Math.abs(c-(r+1.0)/2);
-      score += vertDistanceFromEnd - horDistanceFromEnd / 2.0; 
+      // int horDistanceFromEnd = (int)Math.abs(c-(r+1.0)/2);
+      score += vertDistanceFromEnd; 
     }
 
     // Pieces at end are good
@@ -163,9 +163,9 @@ public class ChineseCheckers {
         endPieceBonus += pieceCoordinate[0] / 2;
       }
     }
-    score += endPieceBonus;
+    // score += endPieceBonus;
 
-    score -= step *2;
+    //score -= step *2;
 
     // // Subtract turns taken
     // score -= (turnNum + turnNum) * 10;
@@ -225,31 +225,20 @@ public class ChineseCheckers {
                 move = new int[]{r1+i, c1+j};
                 turn.add(move);
                 moves.add(turn);
-                //System.out.print(move[0] + " " + move[1] + " | ");
-              }
-              //System.out.print(move[0] + " " + move[1] + " | ");
-            } else if(board[r1+i][c1+j] > 0){
-              if(r1+2*i >= 9 && r1+2*i <= 25 && c1+2*j >= 1 && c1+2*j <= 17){ // If in board
-                if(board[r1+2*i][c1+2*j] == 0 && visited[r1+2*i][c1+2*j] == 0) { // If jump is empty and not previously been there
-                  ArrayList<int[]> turn = new ArrayList<>(prevTurn);
-                  move = new int[]{r1+2*i, c1+2*j};
-                  turn.add(move);
-                  moves.add(turn);
-                  board[r1][c1] = 0;
-                  board[r1+2*i][c1+2*j] = 1;
-                  visited[r1][c1] = 1;
-                  //Iterates through each jump to find combinations of jumps
-                  ArrayList<ArrayList<int[]>> possibleNextMoves = nextAvailableMoves(r1+2*i, c1+2*j, board, turn);
-                  visited[r1][c1] = 0;
-                  for(ArrayList<int[]> possibleNextMoveSet : possibleNextMoves){
-                    moves.add(possibleNextMoveSet);
-                  }
-                  //System.out.print(move[0] + " " + move[1] + " | ");
-
-                  //revert changes made
-                  board[r1][c1] = 1;
-                  board[r1+2*i][c1+2*j] = 0;
+                board[r1][c1] = 0;
+                board[r1+2*i][c1+2*j] = 1;
+                visited[r1][c1] = 1;
+                //Iterates through each jump to find combinations of jumps
+                ArrayList<ArrayList<int[]>> possibleNextMoves = nextAvailableMoves(r1+2*i, c1+2*j, board, turn);
+                visited[r1][c1] = 0;
+                for(ArrayList<int[]> possibleNextMoveSet : possibleNextMoves){
+                  moves.add(possibleNextMoveSet);
                 }
+                //System.out.print(move[0] + " " + move[1] + " | ");
+
+                //revert changes made
+                board[r1][c1] = 1;
+                board[r1+2*i][c1+2*j] = 0;
               }
             }
           }
@@ -310,15 +299,19 @@ public class ChineseCheckers {
           if (val == -42069) {
             val = getScore(friendlyPieces, depth + turnNum);
           }
-          // Gets max score
-          maxVal = Math.max(maxVal, val);
 
           // If found move with higher potential score, set the best move to the first move done
-          if (maxVal == val && depth == 0) {
+          if (val > maxVal && depth == 0) {
+            maxVal = val;
             move.add(0, piece);
             currentBestMove = move;
+
+            System.out.print(maxVal);
+            for(int asdf = 0; asdf <currentBestMove.size(); asdf++){
+              System.out.print(" (" + currentBestMove.get(asdf)[0] + "," + currentBestMove.get(asdf)[1] + ")");
+            }
+            System.out.println();
           }
-          //System.out.println(depth + "  " + maxVal + " " + currentBestMove[0][0] + " " + currentBestMove[0][1] + " " + currentBestMove[1][0] + " " + currentBestMove[1][1]);
 
         }
 

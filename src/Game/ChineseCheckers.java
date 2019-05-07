@@ -20,10 +20,6 @@ public class ChineseCheckers {
   int moves = 0;
   int[][] visited = new int[26][18];
   int[] scoreConstants = new int[0];
-  double startTime = System.nanoTime()/1000000000.0;
-  double scoreTime = 0;
-  double availTime = 0;
-  double arrayCopyTime = 0;
   double[] scoreMultiplier = {3, 1, 1, 50, 10};
 
   // Board configs for testing
@@ -42,13 +38,7 @@ public class ChineseCheckers {
   }
 
   public String makeMove(){
-    startTime = System.nanoTime()/1000000000.0;
-    //System.out.println("Start Timer.");
     String output = "MOVE";
-    startTime = System.nanoTime()/1000000000.0;
-    scoreTime = 0;
-    availTime = 0;
-    arrayCopyTime = 0;
 
     // Adjusts depth perception over time (3,2,1)
     depthLayer = 3 - moves%3;
@@ -58,22 +48,12 @@ public class ChineseCheckers {
     } else if (moves == 1){ // Default open move left
       output += "(12,5) (13,6)";
     } else { // Algorithm
-      //printGrid(board);
-      //System.out.println("Start alg " + (System.nanoTime()/1000000000.0 - startTime));
-      double score = findBestMove(0, board, friendlyPieces);
-      if (score == -42069) {
-        // No valid moves
-      }
-      //System.out.println("Score: " + getScore(friendlyPieces, 0));
+      double score = findBestMove(0);
 
       for(int[] step:currentBestMove){
         output += " (" + Integer.toString(step[0]) + "," + Integer.toString(step[1]) + ")";
       }
     }
-    //System.out.println("total time: " + (System.nanoTime()/1000000000.0 - startTime));
-    //System.out.println("Score time: " + scoreTime);
-    //System.out.println("Available moves time: " + availTime);
-    //System.out.println("Copy array time: " + arrayCopyTime);
     moves++;
     return(output);
   }
@@ -103,7 +83,6 @@ public class ChineseCheckers {
       }
       piecesProcessed++;
     }
-    //printGrid();
   }
 
   private void initGrid() {
@@ -216,10 +195,9 @@ public class ChineseCheckers {
     System.out.println("____________________________");
   }
 
-  public ArrayList<ArrayList<int[]>> nextAvailableMoves (int r1, int c1, int[][] board, ArrayList<int[]> prevTurn){
+  public ArrayList<ArrayList<int[]>> nextAvailableMoves (int r1, int c1, ArrayList<int[]> prevTurn){
     ArrayList<ArrayList<int[]>> moves = new ArrayList<>();
     int[] move;
-    //System.out.print(r1 + " " + c1 + ": ");
     // Checks adjacent moves and jump moves
     for(int i = -1; i <= 1; i++){
       for(int j = -1; j <= 1; j++){
@@ -231,9 +209,7 @@ public class ChineseCheckers {
                 move = new int[]{r1+i, c1+j};
                 turn.add(move);
                 moves.add(turn);
-                //System.out.print(move[0] + " " + move[1] + " | ");
               }
-              //System.out.print(move[0] + " " + move[1] + " | ");
             } else if(board[r1+i][c1+j] > 0){
               if(r1+2*i >= 9 && r1+2*i <= 25 && c1+2*j >= 1 && c1+2*j <= 17){ // If in board
                 if(board[r1+2*i][c1+2*j] == 0 && visited[r1+2*i][c1+2*j] == 0) { // If jump is empty and not previously been there
@@ -246,12 +222,11 @@ public class ChineseCheckers {
                     board[r1+2*i][c1+2*j] = 1;
                     visited[r1][c1] = 1;
                     //Iterates through each jump to find combinations of jumps
-                    ArrayList<ArrayList<int[]>> possibleNextMoves = nextAvailableMoves(r1+2*i, c1+2*j, board, turn);
+                    ArrayList<ArrayList<int[]>> possibleNextMoves = nextAvailableMoves(r1+2*i, c1+2*j, turn);
                     visited[r1][c1] = 0;
                     for(ArrayList<int[]> possibleNextMoveSet : possibleNextMoves){
                       moves.add(possibleNextMoveSet);
                     }
-                    //System.out.print(move[0] + " " + move[1] + " | ");
 
                     //revert changes made
                     board[r1][c1] = 1;
@@ -264,15 +239,15 @@ public class ChineseCheckers {
         }
       }
     }
-    //System.out.println("Possible moves for piece at " + r1 + " " + c1);
-    /*
-    for(int i = 0; i < moves.size(); i++){
-      System.out.println(moves.get(i)[0] + " " + moves.get(i)[1]);
-    }*/
     return moves;
   }
 
-  private double findBestMove (int depth, int[][] board, int[][] friendlyPieces) {
+  /**
+   * Recursively finds the best move and saves it to class variable currentBestMove.
+   * @param depth How many turns into the future its looking at.
+   * @return Score of the board.
+   */
+  private double findBestMove (int depth) {
     if (checkWin()) {
         System.out.println("win win win");
         return 10000000;
@@ -280,36 +255,21 @@ public class ChineseCheckers {
 
     // Stop recursive search after 3 turns depth
     if (depth >= depthLayer) {
-      double time = System.nanoTime()/1000000000.0;
-      //System.out.println((System.nanoTime()/1000000000.0 - startTime) + "depth: " + depth + "start Score");
       double score = getScore(friendlyPieces, depth - 1 + moves);
-      //System.out.println((System.nanoTime()/1000000000.0 - startTime) + "depth: " + depth + "stop Score");
-      scoreTime += System.nanoTime()/1000000000.0 - time;
-
       return score;
     }
-    double time = System.nanoTime()/1000000000.0;
-    arrayCopyTime += System.nanoTime()/1000000000.0 - time;
     double maxVal = Integer.MIN_VALUE;
 
     // Loop through every move of every friendly piece
     for (int i = 0; i < friendlyPieces.length; i++) {
       int[] piece = friendlyPieces[i];
-      time = System.nanoTime()/1000000000.0;
-      //System.out.println((System.nanoTime()/1000000000.0 - startTime) + "depth: " + depth + "start find possible moves");
-
       ArrayList<int[]> emptyMoves = new ArrayList<>();
       visited = new int[26][18];
-      //System.out.print(piece[0] + " " + piece[1] + ": ");
-      ArrayList<ArrayList<int[]>> possibleMoves = nextAvailableMoves(piece[0], piece[1], board, emptyMoves);
-      //System.out.println((System.nanoTime()/1000000000.0 - startTime) + "depth: " + depth + "stop find possible moves");
-      availTime += System.nanoTime()/1000000000.0 - time;
+      ArrayList<ArrayList<int[]>> possibleMoves = nextAvailableMoves(piece[0], piece[1], emptyMoves);
 
       for (int j = 0; j < possibleMoves.size(); j++) {
         ArrayList<int[]> move = possibleMoves.get(j);
         int[] finalPos = move.get(move.size() - 1);
-        time = System.nanoTime()/1000000000.0;
-        arrayCopyTime += System.nanoTime()/1000000000.0 - time;
 
         // Make move on copy of board
         board[finalPos[0]][finalPos[1]] = 1;
@@ -319,7 +279,7 @@ public class ChineseCheckers {
         if (finalPos[0] >= piece[0]) { // Makes piece never move backwards
 
           // Recursive call, determines score of move depending on potential score of future moves
-          double val = findBestMove(depth + 1, board, friendlyPieces);
+          double val = findBestMove(depth + 1);
           // Gets max score
           maxVal = Math.max(maxVal, val);
 
@@ -327,8 +287,6 @@ public class ChineseCheckers {
           if (maxVal == val && depth == 0) {
             move.add(0, piece);
             currentBestMove = move;
-            System.out.println(depth + "  " + maxVal + " (" + currentBestMove.get(0)[0] + "," + currentBestMove.get(0)[1] + ") (" + currentBestMove.get(currentBestMove.size() - 1)[0] + "," + currentBestMove.get(currentBestMove.size() - 1)[1] + ")");
-
           }
 
         }
@@ -342,6 +300,10 @@ public class ChineseCheckers {
     return maxVal;
   }
 
+  /**
+   * Checks if player has won on current board
+   * @return A boolean that represents whether or not player has won
+   */
   public boolean checkWin(){
     boolean full = true;
     boolean containsFriendly = false;
@@ -354,16 +316,21 @@ public class ChineseCheckers {
         }
       }
     }
-
     return full && containsFriendly;
   }
 
+  /**
+   * Checks if the position is in an illegal goal area
+   * @param r The row of the position
+   * @param c The column of the position
+   * @return A boolean that represents if move is legal
+   */
   private boolean checkLegalGoalArea(int r, int c){
     boolean legal = true;
-    if(r <17 &&(c<5 || c >r-4)){
+    if((r < 17) && ((c < 5) || (c > r - 4))){
       legal = false;
     }
-    if(r >17 && (c<r-12 || c>13)){
+    if((r > 17) && ((c < r - 12) || (c > 13))){
       legal = false;
     }
     return legal;

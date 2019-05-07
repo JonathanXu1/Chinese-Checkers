@@ -6,10 +6,10 @@ import java.util.Arrays;
 //TODO: Follow through with decisions near end
 
 /**
- * This class is responsible for playing the game
+ * This class is the algorithm to find what move to make.
  *
- * @author
- * @since   2019-04-24
+ * @author Jonathan Xu, Bryan Zhang, and Carol Chen
+ * @since 2019-04-24
  */
 public class ChineseCheckers {
   int depthLayer = 3;
@@ -30,13 +30,26 @@ public class ChineseCheckers {
     initGrid();
   }
 
+  /**
+   * Getter for the score multipliers for the genetic algorithm.
+   * @return A double array that stores the score multipliers.
+   */
   public double[] getScoreMultiplier(){
     return  scoreMultiplier;
   }
+
+  /**
+   * Setter for the score multipliers for the genetic algorithm.
+   * @param newMultiplier A double array that stores the score multipliers.
+   */
   public void setScoreMultiplier(double[] newMultiplier){
     scoreMultiplier = newMultiplier;
   }
 
+  /**
+   * Makes the move and sends the move output to server to the client.
+   * @return A String that represents the move to make.
+   */
   public String makeMove(){
     String output = "MOVE";
 
@@ -58,6 +71,10 @@ public class ChineseCheckers {
     return(output);
   }
 
+  /**
+   * Reads the board input from the server and plots pieces onto the board.
+   * @param boardMessage The board input from the server.
+   */
   public void readGrid(String boardMessage) {
     // Resets board
     for(int i = 0; i < 26; i++){
@@ -85,6 +102,9 @@ public class ChineseCheckers {
     }
   }
 
+  /**
+   * Initializes the grid
+   */
   private void initGrid() {
     // Manually creates bounds for board
     for (int i = 0; i < 26; i++) {
@@ -101,7 +121,12 @@ public class ChineseCheckers {
     }
   }
 
-  private double getScore(int[][] friendlyPieces, int turnNum){
+  /**
+   * Gets the score of the current board.
+   * @param turnNum The turn number.
+   * @return The score of the current board.
+   */
+  private double getScore(int turnNum){
     // TODO: calculate score for area around piece instead
     double score = 0;
     // Iterate through all friendly pieces
@@ -158,9 +183,9 @@ public class ChineseCheckers {
     return score;
   }
 
-  //
-  // TESTING FUNCTION
-  //
+  /**
+   * Prints out the current grid
+   */
   private void printGrid() {
     System.out.println("____________________________");
     int rowNum = 0;
@@ -195,6 +220,13 @@ public class ChineseCheckers {
     System.out.println("____________________________");
   }
 
+  /**
+   * Finds the next available moves for a specific piece.
+   * @param r1 The row of the piece.
+   * @param c1 The column of the piece.
+   * @param prevTurn An ArrayList of the path to get to end point.
+   * @return An ArrayList of the available moves.
+   */
   public ArrayList<ArrayList<int[]>> nextAvailableMoves (int r1, int c1, ArrayList<int[]> prevTurn){
     ArrayList<ArrayList<int[]>> moves = new ArrayList<>();
     int[] move;
@@ -255,7 +287,7 @@ public class ChineseCheckers {
 
     // Stop recursive search after 3 turns depth
     if (depth >= depthLayer) {
-      double score = getScore(friendlyPieces, depth - 1 + moves);
+      double score = getScore(depth - 1 + moves);
       return score;
     }
     double maxVal = Integer.MIN_VALUE;

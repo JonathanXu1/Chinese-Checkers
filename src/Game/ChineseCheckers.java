@@ -119,20 +119,19 @@ public class ChineseCheckers {
   }
 
   private double getScore(int[][] friendlyPieces, int turnNum){
-    // TODO: calculate score for area around piece instead
     double score = 0;
     // Iterate through all friendly pieces
-    for(int i = 0; i < friendlyPieces.length; i++){
+    for (int i = 0; i < friendlyPieces.length; i++) {
       int r = friendlyPieces[i][0]; // Row
       int c = friendlyPieces[i][1]; // Column
       // Checks for nearby friendly pieces
       int nearbyPieces = 0;
-      for(int v = -1; v <=1; v++){
-        for(int h = -1; h <=1; h++){
+      for(int v = -1; v <= 1; v++){
+        for(int h = -1; h <= 1; h++){
           if(r+v >= 9 && r+v <= 25 && c+h >= 1 && c+h <= 17) { // If in board
-            if((v==-1 && h!=1) || (v==0 && h!=0) || (v==1 && h!=-1)) { // Excludes j=1:r-1, j=0:r+0, j=-1:i=1
+            if((v == -1 && h != 1) || (v == 0 && h != 0) || (v == 1 && h != -1)) { // Excludes j=1:r-1, j=0:r+0, j=-1:i=1
               if(board[r+v][c+h] == 1){ // If friendly
-                nearbyPieces ++;
+                nearbyPieces++;
               }
             }
           }
@@ -152,24 +151,20 @@ public class ChineseCheckers {
       // Finds distance from end (in steps)
       int vertDistanceFromEnd = 25 - i; // V distance from bottom + H distance to center line
       int horDistanceFromEnd = (int)Math.abs(c-(r+1.0)/2);
-      // Being closer to the end is good
-      // Prioritizes pieces that started at the back, hopefully this will bring a 'flip' move pattern
-      score += ((16 - vertDistanceFromEnd)*(startRow-8)*3 + (7 - horDistanceFromEnd)) * 1;
-      // Being close to friendlies should be scored higher when the piece is closer to the end
-      score += nearbyPieces *1* (16-vertDistanceFromEnd);
+      score += vertDistanceFromEnd - horDistanceFromEnd / 2.0; 
     }
 
     // Pieces at end are good
-    int piecesAtEnd = 0;
+    int endPieceBonus = 0;
     for(int[] pieceCoordinate:friendlyPieces){
-      if(pieceCoordinate[0] >= 22){
-        piecesAtEnd ++;
+      if (pieceCoordinate[0] >= 22) {
+        endPieceBonus += pieceCoordinate[0] / 2;
       }
     }
-    score += piecesAtEnd * 50;
+    score += endPieceBonus;
 
-    // Subtract turns taken
-    score -= (moves + turnNum) * 10;
+    // // Subtract turns taken
+    // score -= (moves + turnNum) * 10;
     // TODO: Get suitable multiplier for moves score reduction
     return score;
   }

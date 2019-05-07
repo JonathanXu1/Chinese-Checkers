@@ -211,41 +211,42 @@ public class ChineseCheckers {
     int[] move;
     //System.out.print(r1 + " " + c1 + ": ");
     // Checks adjacent moves and jump moves
-    for(int i = -1; i <= 1; i++){
-      for(int j = -1; j <= 1; j++){
-        if(r1+i >= 9 && r1+i <= 25 && c1+j >= 1 && c1+j <= 17){ // If in board
-          if((i==-1 && j!=1) || (i==0 && j!=0) || (i==1 && j!=-1)){ // Excludes j=1:r-1, j=0:r+0, j=-1:i=1
-            if(board[r1+i][c1+j] == 0 && prevTurn.size() == 0){ // If adjacent is empty and has not just jumped over another piece
-              if(checkLegalGoalArea(r1+i, c1+j)){
-                ArrayList<int[]> turn = new ArrayList<>();
-                move = new int[]{r1+i, c1+j};
+    for (int i = -1; i <= 1; i++) {
+      for (int j = -1; j <= 1; j++) {
+        if (!(r1+i >= 9 && r1+i <= 25 && c1+j >= 1 && c1+j <= 17)) { // if not on board
+          continue;
+        } 
+        if((i==-1 && j!=1) || (i==0 && j!=0) || (i==1 && j!=-1)){ // Excludes j=1:r-1, j=0:r+0, j=-1:i=1
+          if(board[r1+i][c1+j] == 0 && prevTurn.size() == 0){ // If adjacent is empty and has not just jumped over another piece
+            if(checkLegalGoalArea(r1+i, c1+j)){
+              ArrayList<int[]> turn = new ArrayList<>();
+              move = new int[]{r1+i, c1+j};
+              turn.add(move);
+              moves.add(turn);
+              //System.out.print(move[0] + " " + move[1] + " | ");
+            }
+            //System.out.print(move[0] + " " + move[1] + " | ");
+          } else if(board[r1+i][c1+j] > 0){
+            if(r1+2*i >= 9 && r1+2*i <= 25 && c1+2*j >= 1 && c1+2*j <= 17){ // If in board
+              if(board[r1+2*i][c1+2*j] == 0 && visited[r1+2*i][c1+2*j] == 0) { // If jump is empty and not previously been there
+                ArrayList<int[]> turn = new ArrayList<>(prevTurn);
+                move = new int[]{r1+2*i, c1+2*j};
                 turn.add(move);
                 moves.add(turn);
-                //System.out.print(move[0] + " " + move[1] + " | ");
-              }
-              //System.out.print(move[0] + " " + move[1] + " | ");
-            } else if(board[r1+i][c1+j] > 0){
-              if(r1+2*i >= 9 && r1+2*i <= 25 && c1+2*j >= 1 && c1+2*j <= 17){ // If in board
-                if(board[r1+2*i][c1+2*j] == 0 && visited[r1+2*i][c1+2*j] == 0) { // If jump is empty and not previously been there
-                  ArrayList<int[]> turn = new ArrayList<>(prevTurn);
-                  move = new int[]{r1+2*i, c1+2*j};
-                  turn.add(move);
-                  moves.add(turn);
-                  board[r1][c1] = 0;
-                  board[r1+2*i][c1+2*j] = 1;
-                  visited[r1][c1] = 1;
-                  //Iterates through each jump to find combinations of jumps
-                  ArrayList<ArrayList<int[]>> possibleNextMoves = nextAvailableMoves(r1+2*i, c1+2*j, board, turn);
-                  visited[r1][c1] = 0;
-                  for(ArrayList<int[]> possibleNextMoveSet : possibleNextMoves){
-                    moves.add(possibleNextMoveSet);
-                  }
-                  //System.out.print(move[0] + " " + move[1] + " | ");
-
-                  //revert changes made
-                  board[r1][c1] = 1;
-                  board[r1+2*i][c1+2*j] = 0;
+                board[r1][c1] = 0;
+                board[r1+2*i][c1+2*j] = 1;
+                visited[r1][c1] = 1;
+                //Iterates through each jump to find combinations of jumps
+                ArrayList<ArrayList<int[]>> possibleNextMoves = nextAvailableMoves(r1+2*i, c1+2*j, board, turn);
+                visited[r1][c1] = 0;
+                for(ArrayList<int[]> possibleNextMoveSet : possibleNextMoves){
+                  moves.add(possibleNextMoveSet);
                 }
+                //System.out.print(move[0] + " " + move[1] + " | ");
+
+                //revert changes made
+                board[r1][c1] = 1;
+                board[r1+2*i][c1+2*j] = 0;
               }
             }
           }

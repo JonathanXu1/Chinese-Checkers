@@ -42,7 +42,7 @@ public class ChineseCheckers {
 
   public String makeMove(){
     startTime = System.nanoTime()/1000000000.0;
-    System.out.println("Start Timer.");
+    //System.out.println("Start Timer.");
     String output = "MOVE";
     startTime = System.nanoTime()/1000000000.0;
     scoreTime = 0;
@@ -60,7 +60,7 @@ public class ChineseCheckers {
       if (score == -42069) {
         // No valid moves
       }
-      System.out.println("Score: " + getScore(friendlyPieces, 0));
+      //System.out.println("Score: " + getScore(friendlyPieces, 0));
 
       for(int[] step:currentBestMove){
         output += " (" + Integer.toString(step[0]) + "," + Integer.toString(step[1]) + ")";

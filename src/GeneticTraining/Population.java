@@ -9,7 +9,7 @@ public class Population {
     personalities = new Personality[length];
   }
 
-  public Population intializePopulation(){
+  public Population initializePopulation(){
     // TODO: Getter
     for(int i = 0; i < personalities.length; i++){
       personalities[i] = new Personality(GeneticAlgorithm.NUM_GENES);

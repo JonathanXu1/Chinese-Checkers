@@ -7,7 +7,9 @@ import java.util.Arrays;
 public class Trainer {
 
   public static void main(String[] args) {
-    Population population = new Population(GeneticAlgorithm.POPULATION_SIZE).intializePopulation();
+    System.out.println("Begin training:");
+    System.out.println("Reading from file has not yet been implemented.");
+    Population population = new Population(GeneticAlgorithm.POPULATION_SIZE).initializePopulation();
     GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm();
     System.out.println("Target steps: " + GeneticAlgorithm.TARGET_STEPS);
     System.out.println("---------------------------------------------------------");

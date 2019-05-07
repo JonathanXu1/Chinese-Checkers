@@ -10,9 +10,14 @@ public class Personality {
   private ChineseCheckers algorithm = new ChineseCheckers();
 
   public Personality(int length){
-    genes = new double[length];
-    for(int i = 0; i < genes.length; i++){
-      genes[i] = Math.random()*50;
+    //genes = new double[length];
+    genes = new double[]{3, 1, 1, 50, 10};
+
+    for(int i = 0; i < length; i++){
+
+      genes[i] += Math.round(Math.random() * 100.0) / 100.0 -1;
+
+      //genes[i] = Math.random()*5;
     }
     algorithm.setScoreMultiplier(genes);
   }
@@ -21,28 +26,45 @@ public class Personality {
     return genes;
   }
 
+  public void setGenes(double[] newGenes){
+    genes = newGenes;
+    changedGenes = true;
+  }
+
   public int getFitness(){
     if(changedGenes){
       recalculateFitness();
+      //fitness = (int)(Math.random()*100);
+      changedGenes = false;
     }
     return  fitness;
   }
 
   public void recalculateFitness(){
+    System.out.println("recalculate");
     fitness = 0;
     String board = GeneticAlgorithm.BOARD_INIT;
+    algorithm.readGrid(board);
+
     while(!algorithm.checkWin() && fitness < 100){
-      algorithm.readGrid(board);
       String move = algorithm.makeMove();
-      String startPos = move.substring(5,move.indexOf(')') + 1);
+      String startPos = move.substring(move.indexOf('('), move.indexOf(')') + 1);
       String stopPos = move.substring(move.lastIndexOf('('));
-      board = board.substring(0, board.indexOf('(')) + startPos + board.substring(board.indexOf(')')+1, board.lastIndexOf('(')) + stopPos;
-      fitness ++;
+
+      /*
+      System.out.println(board);
+      System.out.println(move);
+      System.out.println(startPos);
+      System.out.println(stopPos);
+      */
+      if(!board.contains(startPos)){ // If algorithm cannot find best next move, it breaks
+        fitness = 100;
+      } else {
+        board = board.substring(0, board.indexOf(startPos)) + stopPos + board.substring(board.indexOf(startPos) + startPos.length());
+        algorithm.readGrid(board);
+        fitness ++;
+      }
     }
-    changedGenes = false;
   }
 
-  public void setGenesChanged(){
-    changedGenes = true;
-  }
 }

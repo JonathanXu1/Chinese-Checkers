@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 //TODO: Force a solution if running out of time
-//TODO: Look at fewer depths as time passes on
+//TODO: Follow through with decisions near end
 
 /**
  * This class is responsible for playing the game
@@ -53,9 +53,9 @@ public class ChineseCheckers {
     // Adjusts depth perception over time
     if(moves > 20 && moves < 30 && depthLayer > 2){
       depthLayer --;
-    } else if(moves >30 && depthLayer >1){
+    } /*else if(moves >30 && depthLayer >1){
       depthLayer --;
-    }
+    }*/
 
 
 

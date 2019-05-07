@@ -43,7 +43,7 @@ public class ChineseCheckers {
 
   public String makeMove(){
     startTime = System.nanoTime()/1000000000.0;
-    System.out.println("Start Timer.");
+    //System.out.println("Start Timer.");
     String output = "MOVE";
     startTime = System.nanoTime()/1000000000.0;
     scoreTime = 0;
@@ -65,21 +65,21 @@ public class ChineseCheckers {
       output += "(12,5) (13,6)";
     } else { // Algorithm
       //printGrid(board);
-      System.out.println("Start alg " + (System.nanoTime()/1000000000.0 - startTime));
+      //System.out.println("Start alg " + (System.nanoTime()/1000000000.0 - startTime));
       double score = findBestMove(0, board, friendlyPieces);
       if (score == -42069) {
         // No valid moves
       }
-      System.out.println("Score: " + getScore(friendlyPieces, 0));
+      //System.out.println("Score: " + getScore(friendlyPieces, 0));
 
       for(int[] step:currentBestMove){
         output += " (" + Integer.toString(step[0]) + "," + Integer.toString(step[1]) + ")";
       }
     }
-    System.out.println("total time: " + (System.nanoTime()/1000000000.0 - startTime));
-    System.out.println("Score time: " + scoreTime);
-    System.out.println("Available moves time: " + availTime);
-    System.out.println("Copy array time: " + arrayCopyTime);
+    //System.out.println("total time: " + (System.nanoTime()/1000000000.0 - startTime));
+    //System.out.println("Score time: " + scoreTime);
+    //System.out.println("Available moves time: " + availTime);
+    //System.out.println("Copy array time: " + arrayCopyTime);
     moves++;
     return(output);
   }
@@ -109,7 +109,7 @@ public class ChineseCheckers {
       }
       piecesProcessed++;
     }
-    printGrid();
+    //printGrid();
   }
 
   private void initGrid() {
@@ -180,7 +180,7 @@ public class ChineseCheckers {
     //score += piecesAtEnd * 50;
 
     // Subtract turns taken
-    //score -= (moves + turnNum) * 10;
+    score -= (moves + turnNum) * 10;
     // TODO: Get suitable multiplier for moves score reduction
     return score;
   }
@@ -277,6 +277,19 @@ public class ChineseCheckers {
   }
 
   private double findBestMove (int depth, int[][] board, int[][] friendlyPieces) {
+    if (checkWin()) {
+      if (depth == 1) {
+        System.out.println("win win win");
+        return 10000000;
+      } /*else if (depth ==2) {
+        System.out.println("win win");
+        return 1000000;
+      } else if (depth == 3) {
+        System.out.println("win");
+        return 100000;
+      }
+      */
+    }
     // Stop recursive search after 3 turns depth
     if (depth >= depthLayer) {
       double time = System.nanoTime()/1000000000.0;
@@ -319,9 +332,6 @@ public class ChineseCheckers {
 
           // Recursive call, determines score of move depending on potential score of future moves
           double val = findBestMove(depth + 1, board, friendlyPieces);
-          if (val == -42069) {
-            val = getScore(friendlyPieces, depth + moves);
-          }
           // Gets max score
           maxVal = Math.max(maxVal, val);
 
@@ -339,11 +349,6 @@ public class ChineseCheckers {
         board[piece[0]][piece[1]] = 1;
         friendlyPieces[i] = piece;
       }
-    }
-
-    // If current board has no move available, return -42069
-    if (maxVal == Integer.MIN_VALUE) {
-      return -42069;
     }
     return maxVal;
   }

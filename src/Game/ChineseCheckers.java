@@ -231,18 +231,20 @@ public class ChineseCheckers {
                   if(checkLegalGoalArea(r1+2*i, c1+2*j)){
                     moves.add(turn);
                   }
-                  int[][] tempBoard = copyArray(board);
-                  tempBoard[r1][c1] = 0;
-                  tempBoard[r1+2*i][c1+2*j] = 1;
+                  board[r1][c1] = 0;
+                  board[r1+2*i][c1+2*j] = 1;
                   visited[r1][c1] = 1;
                   //Iterates through each jump to find combinations of jumps
-                  ArrayList<ArrayList<int[]>> possibleNextMoves = nextAvailableMoves(r1+2*i, c1+2*j, tempBoard, turn);
+                  ArrayList<ArrayList<int[]>> possibleNextMoves = nextAvailableMoves(r1+2*i, c1+2*j, board, turn);
                   visited[r1][c1] = 0;
                   for(ArrayList<int[]> possibleNextMoveSet : possibleNextMoves){
                     moves.add(possibleNextMoveSet);
                   }
                   //System.out.print(move[0] + " " + move[1] + " | ");
                 }
+                //revert changes
+                board[r1][c1] = 1;
+                board[r1+2*i][c1+2*j] = 0;
               }
             }
           }
@@ -285,11 +287,10 @@ public class ChineseCheckers {
       for (int j = 0; j < possibleMoves.size(); j++) {
         ArrayList<int[]> move = possibleMoves.get(j);
         int[] finalPos = move.get(move.size() - 1);
-        int[][] tempBoard = copyArray(board);
 
         // Make move on copy of board
-        tempBoard[finalPos[0]][finalPos[1]] = 1;
-        tempBoard[piece[0]][piece[1]] = 0;
+        board[finalPos[0]][finalPos[1]] = 1;
+        board[piece[0]][piece[1]] = 0;
         friendlyPieces[i] = finalPos;
         // TODO: prevent piece from jumping back and forth
         if (finalPos[0] > piece[0]) { // Makes piece never move backwards
@@ -313,13 +314,14 @@ public class ChineseCheckers {
           //System.out.println(depth + "  " + maxVal + " " + currentBestMove[0][0] + " " + currentBestMove[0][1] + " " + currentBestMove[1][0] + " " + currentBestMove[1][1]);
 
         }
+
+        //Revert back
+        board[finalPos[0]][finalPos[1]] = 0;
+        board[piece[0]][piece[1]] = 1;
+        friendlyPieces[i] = piece;
       }
     }
 
-    // If current board has no move available, return -42069
-    if (maxVal == Double.MIN_VALUE) {
-      return -42069;
-    }
     return maxVal;
   }
 

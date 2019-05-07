@@ -17,6 +17,10 @@ public class ChineseCheckers {
   int moves = 0;
   int[][] visited = new int[26][18];
   int[] scoreConstants = new int[0];
+  double startTime = System.nanoTime()/1000000000.0;
+  double scoreTime = 0;
+  double availTime = 0;
+  double arrayCopyTime = 0;
 
   // Board configs for testing
   String start = "BOARD 1 0 (9, 5) (10, 5) (10, 6) (11, 5) (11, 6) (11, 7) (12, 5) (12, 6) (12, 7) (12, 8)";
@@ -27,7 +31,13 @@ public class ChineseCheckers {
   }
 
   public String makeMove(){
+    startTime = System.nanoTime()/1000000000.0;
+    System.out.println("Start Timer.");
     String output = "MOVE";
+    startTime = System.nanoTime()/1000000000.0;
+    scoreTime = 0;
+    availTime = 0;
+    arrayCopyTime = 0;
 
     if(moves == 0){ // Default open move right
       output += "(12,8) (13,8)";
@@ -35,6 +45,7 @@ public class ChineseCheckers {
       output += "(12,5) (13,6)";
     } else { // Algorithm
       //printGrid(board);
+      System.out.println("Start alg " + (System.nanoTime()/1000000000.0 - startTime));
       int score = findBestMove(0, board, friendlyPieces);
       if (score == -42069) {
         // No valid moves
@@ -45,6 +56,10 @@ public class ChineseCheckers {
         output += " (" + Integer.toString(step[0]) + "," + Integer.toString(step[1]) + ")";
       }
     }
+    System.out.println("total time: " + (System.nanoTime()/1000000000.0 - startTime));
+    System.out.println("Score time: " + scoreTime);
+    System.out.println("Available moves time: " + availTime);
+    System.out.println("Copy array time: " + arrayCopyTime);
     moves++;
     return(output);
   }
@@ -208,17 +223,20 @@ public class ChineseCheckers {
                   move = new int[]{r1+2*i, c1+2*j};
                   turn.add(move);
                   moves.add(turn);
-                  int[][] tempBoard = copyArray(board);
-                  tempBoard[r1][c1] = 0;
-                  tempBoard[r1+2*i][c1+2*j] = 1;
+                  board[r1][c1] = 0;
+                  board[r1+2*i][c1+2*j] = 1;
                   visited[r1][c1] = 1;
                   //Iterates through each jump to find combinations of jumps
-                  ArrayList<ArrayList<int[]>> possibleNextMoves = nextAvailableMoves(r1+2*i, c1+2*j, tempBoard, turn);
+                  ArrayList<ArrayList<int[]>> possibleNextMoves = nextAvailableMoves(r1+2*i, c1+2*j, board, turn);
                   visited[r1][c1] = 0;
                   for(ArrayList<int[]> possibleNextMoveSet : possibleNextMoves){
                     moves.add(possibleNextMoveSet);
                   }
                   //System.out.print(move[0] + " " + move[1] + " | ");
+
+                  //revert changes made
+                  board[r1][c1] = 1;
+                  board[r1+2*i][c1+2*j] = 0;
                 }
               }
             }
@@ -237,38 +255,46 @@ public class ChineseCheckers {
   private int findBestMove (int depth, int[][] board, int[][] friendlyPieces) {
     // Stop recursive search after 3 turns depth
     if (depth >= 3) {
-      return getScore(friendlyPieces, depth - 1 + moves);
-    }
+      double time = System.nanoTime()/1000000000.0;
+      //System.out.println((System.nanoTime()/1000000000.0 - startTime) + "depth: " + depth + "start Score");
+      int score = getScore(friendlyPieces, depth - 1 + moves);
+      //System.out.println((System.nanoTime()/1000000000.0 - startTime) + "depth: " + depth + "stop Score");
+      scoreTime += System.nanoTime()/1000000000.0 - time;
 
-    int[][] tempFriendlyPieces = copyArray(friendlyPieces);
+      return score;
+    }
+    double time = System.nanoTime()/1000000000.0;
+    arrayCopyTime += System.nanoTime()/1000000000.0 - time;
     int maxVal = Integer.MIN_VALUE;
 
     // Loop through every move of every friendly piece
-    for (int i = 0; i < tempFriendlyPieces.length; i++) {
-      int[] piece = tempFriendlyPieces[i];
+    for (int i = 0; i < friendlyPieces.length; i++) {
+      int[] piece = friendlyPieces[i];
+      time = System.nanoTime()/1000000000.0;
+      //System.out.println((System.nanoTime()/1000000000.0 - startTime) + "depth: " + depth + "start find possible moves");
+
       ArrayList<int[]> emptyMoves = new ArrayList<>();
       visited = new int[26][18];
       //System.out.print(piece[0] + " " + piece[1] + ": ");
-      ArrayList<ArrayList<int[]>> possibleMoves = nextAvailableMoves(piece[0], piece[1], copyArray(board), emptyMoves);
+      ArrayList<ArrayList<int[]>> possibleMoves = nextAvailableMoves(piece[0], piece[1], board, emptyMoves);
+      //System.out.println((System.nanoTime()/1000000000.0 - startTime) + "depth: " + depth + "stop find possible moves");
+      availTime += System.nanoTime()/1000000000.0 - time;
+
       for (int j = 0; j < possibleMoves.size(); j++) {
         ArrayList<int[]> move = possibleMoves.get(j);
         int[] finalPos = move.get(move.size() - 1);
-        int[][] tempBoard = copyArray(board);
+        time = System.nanoTime()/1000000000.0;
+        arrayCopyTime += System.nanoTime()/1000000000.0 - time;
 
         // Make move on copy of board
-        tempBoard[finalPos[0]][finalPos[1]] = 1;
-        tempBoard[piece[0]][piece[1]] = 0;
-        tempFriendlyPieces[i] = finalPos;
+        board[finalPos[0]][finalPos[1]] = 1;
+        board[piece[0]][piece[1]] = 0;
+        friendlyPieces[i] = finalPos;
         // TODO: prevent piece from jumping back and forth
         if (finalPos[0] >= piece[0]) { // Makes piece never move backwards
 
           // Recursive call, determines score of move depending on potential score of future moves
-          int val = findBestMove(depth + 1, tempBoard, tempFriendlyPieces);
-
-          // If no moves can be made on future board, set val to score of current board
-          if (val == -42069) {
-            val = getScore(friendlyPieces, depth + moves);
-          }
+          int val = findBestMove(depth + 1, board, friendlyPieces);
 
           // Gets max score
           maxVal = Math.max(maxVal, val);
@@ -281,6 +307,11 @@ public class ChineseCheckers {
           //System.out.println(depth + "  " + maxVal + " " + currentBestMove[0][0] + " " + currentBestMove[0][1] + " " + currentBestMove[1][0] + " " + currentBestMove[1][1]);
 
         }
+
+        //Revert changes made
+        board[finalPos[0]][finalPos[1]] = 0;
+        board[piece[0]][piece[1]] = 1;
+        friendlyPieces[i] = piece;
       }
     }
 

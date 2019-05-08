@@ -8,7 +8,7 @@ package GeneticTraining;
 public class GeneticAlgorithm{
 
   public static final int POPULATION_SIZE = 8;
-  public static final int NUM_GENES = 5;
+  public static final int NUM_GENES = 3;
   public static final double MUTATION_RATE = 0.30;
   public static final int NUM_ELITE_PERSONALITIES = 1; // Will not be subjected to crossover/mutation
   public static final int TARGET_STEPS = 27; //In 1971, Octave Levenspiel found a solution in 27 moves [Ibid.]; we demonstrate that no shorter solution exists.

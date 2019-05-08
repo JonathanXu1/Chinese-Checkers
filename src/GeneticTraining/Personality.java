@@ -11,7 +11,7 @@ public class Personality {
 
   public Personality(int length){
     //genes = new double[length];
-    genes = new double[]{3, 1, 1, 50, 10};
+    genes = new double[]{0.5, 0.7, 3};
 
     for(int i = 0; i < length; i++){
 

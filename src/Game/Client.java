@@ -17,7 +17,7 @@ import java.util.Scanner;
 public class Client {
   private static Socket mySocket; //socket for connection
   private static BufferedReader input; //reader for network stream
-  private static PrintWriter output;  //printwriter for network output
+  private static PrintWriter output; //printwriter for network output
   private static boolean running = false; //thread status via boolean
   //TODO: Delete running boolean probably
   private static ChineseCheckers algorithm = new ChineseCheckers();
@@ -41,12 +41,12 @@ public class Client {
       output = new PrintWriter(mySocket.getOutputStream()); //assign printwriter to network stream
       System.out.println("Connection made.");
       running = true;
-    } catch (IOException e) {  //connection error occured
+    } catch (IOException e) { //connection error occured
       System.out.println("Connection to Server Failed");
       e.printStackTrace();
     }
 
-    if(running){
+    if (running) {
       //Join a room
       enterRoom();
       //Choose a name
@@ -59,7 +59,7 @@ public class Client {
       String msg = getServerMessage();
       if (msg.contains("BOARD")) {
         algorithm.readGrid(msg);
-        if(!algorithm.checkWin());
+        if (!algorithm.checkWin());
         String output = algorithm.makeMove();
         sendMessage(output);
         System.out.println("Post to server: " + output);
@@ -79,7 +79,7 @@ public class Client {
   private static void enterRoom() {
     boolean success = false;
     String roomName = "";
-    while(!success) {
+    while (!success) {
       System.out.println("What's the name of the room you want to join?");
       roomName = keyboardScanner.nextLine();
       sendMessage("JOINROOM " + roomName);
@@ -94,7 +94,7 @@ public class Client {
   private static void chooseName() {
     boolean success = false;
     String name = "";
-    while(!success){
+    while (!success) {
       System.out.println("What's your name?");
       name = keyboardScanner.nextLine();
       sendMessage("CHOOSENAME " + name);

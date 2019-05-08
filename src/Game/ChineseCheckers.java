@@ -38,6 +38,9 @@ public class ChineseCheckers {
   }
 
   public String makeMove(){
+    // Displays board
+    printGrid();
+
     String output = "MOVE";
 
     // Adjusts depth perception over time (3,2,1)
@@ -54,6 +57,11 @@ public class ChineseCheckers {
       }
     }
     moves++;
+
+    // Debug info
+    System.out.println("Board score: " + getScore(friendlyPieces, 0));
+    System.out.println(output);
+
     return(output);
   }
 

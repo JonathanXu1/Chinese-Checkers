@@ -216,11 +216,11 @@ public class ChineseCheckers {
           lineToPrint += "  ";
           characters += 2;
         } else if (item == 0) {
-          lineToPrint += "○" + " ";
+          lineToPrint += "o" + " ";
           characters += 2;
         } else {
           lineToPrint += "\033[0;3" + item + "m";
-          lineToPrint += "●" + " ";
+          lineToPrint += "O" + " ";
           characters += 2;
           lineToPrint += "\033[0m";
         }

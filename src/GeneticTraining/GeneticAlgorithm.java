@@ -22,66 +22,70 @@ public class GeneticAlgorithm{
 
   private Population crossoverPopulation(Population population){
     Population crossoverPop = new Population(POPULATION_SIZE);
+    Personality[] newPersonalities = new Personality[POPULATION_SIZE];
     for(int i = 0; i < NUM_ELITE_PERSONALITIES; i++){
-      // TODO: Getter
-      crossoverPop.getPersonalities()[i] = population.getPersonalities()[i];
+      newPersonalities[i] = population.getPersonalities()[i];
     }
     for(int i = NUM_ELITE_PERSONALITIES ; i < POPULATION_SIZE; i++){
       Personality p1 = selectTourneyPop(population).getPersonalities()[0];
       Personality p2 = selectTourneyPop(population).getPersonalities()[0];
-      // TODO: Getter
-      crossoverPop.getPersonalities()[i] = crossoverPersonality(p1, p2);
+      newPersonalities[i] = crossoverPersonality(p1, p2);
     }
+    crossoverPop.setPersonalities(newPersonalities);
     return crossoverPop;
   }
 
   private Population mutatePopulation(Population population){
     Population mutatePop = new Population(POPULATION_SIZE);
+    Personality[] newPersonalities = new Personality[POPULATION_SIZE];
     for(int i = 0; i < NUM_ELITE_PERSONALITIES; i++){
-      // TODO: Getter
-      mutatePop.getPersonalities()[i] = population.getPersonalities()[i];
+      newPersonalities[i] = population.getPersonalities()[i];
     }
     for(int i = NUM_ELITE_PERSONALITIES; i < POPULATION_SIZE; i++){
-      mutatePop.getPersonalities()[i] = mutatePersonality(population.getPersonalities()[i]);
+      newPersonalities[i] = mutatePersonality(population.getPersonalities()[i]);
     }
+    mutatePop.setPersonalities(newPersonalities);
     return mutatePop;
   }
 
   // Randomly mixes the traits from two personalities
   private Personality crossoverPersonality(Personality p1, Personality p2){
     Personality crossover = new Personality(NUM_GENES);
+    double[] newGenes = new double[NUM_GENES];
     for(int i = 0; i < NUM_GENES; i++){
-      // TODO: getter
       if(Math.random() < 0.5){
-        crossover.getGenes()[i] = p1.getGenes()[i];
+        newGenes[i] = p1.getGenes()[i];
       } else {
-        crossover.getGenes()[i] = p2.getGenes()[i];
+        newGenes[i] = p2.getGenes()[i];
       }
     }
+    crossover.setGenes(newGenes);
     return crossover;
   }
 
-  // TODO: Verify that mutation algo works
   // Randomly swaps traits in the personality for randomness
   private Personality mutatePersonality(Personality personality){
     Personality mutated = new Personality(NUM_GENES);
+    double[] newGenes = new double[NUM_GENES];
     for(int i = 0; i < NUM_GENES; i++){
       if(Math.random() < MUTATION_RATE){
-        mutated.getGenes()[i] = personality.getGenes()[i] + Math.round(Math.random() * 100.0) / 100.0 -1;;
+        newGenes[i] = personality.getGenes()[i] + Math.round(Math.random() * 100.0) / 100.0 -1;;
       } else {
-        mutated.getGenes()[i] = personality.getGenes()[i];
+        newGenes[i] = personality.getGenes()[i];
       }
     }
+    mutated.setGenes(newGenes);
     return mutated;
   }
 
   // Selects outputs random personalities in sorted order
   private Population selectTourneyPop(Population pop){
     Population tournamentPop = new Population(TOURNAMENT_SELECTION_SIZE);
+    Personality[] newPersonalities = new Personality[NUM_GENES];
     for(int i = 0; i < TOURNAMENT_SELECTION_SIZE; i++){
-      // TODO: getter
-      tournamentPop.getPersonalities()[i] = pop.getPersonalities()[(int)(Math.random()*POPULATION_SIZE)];
+      newPersonalities[i] = pop.getPersonalities()[(int)(Math.random()*POPULATION_SIZE)];
     }
+    tournamentPop.setPersonalities(newPersonalities);
     tournamentPop.sortPersonalitiesByFitness();
     return  tournamentPop;
   }

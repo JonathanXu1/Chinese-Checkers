@@ -2,7 +2,6 @@ package Game;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-//TODO: Force a solution if running out of time
 //TODO: Follow through with decisions near end
 
 /**
@@ -24,6 +23,9 @@ public class ChineseCheckers {
   double[] scoreMultiplier = {0.5, 0.7, 3};
   // Default {1, 1, 3} GMO {0.5, 0.7, 3}
 
+  /**
+   * constructor
+   */
   public ChineseCheckers() {
     initGrid();
   }
@@ -113,7 +115,7 @@ public class ChineseCheckers {
   }
 
   /**
-   * Initializes the grid
+   * Initializes the grid by setting the bounds of the checkers board
    */
   private void initGrid() {
     // Manually creates bounds for board
@@ -195,7 +197,7 @@ public class ChineseCheckers {
   }
 
   /**
-   * Prints out the current grid
+   * Prints out the current grid, to be viewed on the client end.
    */
   private void printGrid() {
     System.out.println("____________________________");

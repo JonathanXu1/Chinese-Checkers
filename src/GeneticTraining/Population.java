@@ -10,7 +10,6 @@ public class Population {
   }
 
   public Population initializePopulation(){
-    // TODO: Getter
     for(int i = 0; i < personalities.length; i++){
       personalities[i] = new Personality(GeneticAlgorithm.NUM_GENES);
     }
@@ -20,6 +19,10 @@ public class Population {
 
   public Personality[] getPersonalities(){
     return personalities;
+  }
+
+  public void setPersonalities(Personality[] newPersonalities){
+    this.personalities = newPersonalities;
   }
 
   public void sortPersonalitiesByFitness(){

@@ -2,8 +2,6 @@ package GeneticTraining;
 
 import java.util.Arrays;
 
-// TODO: https://www.youtube.com/watch?v=UcVJsV-tqlo
-
 public class Trainer {
 
   public static void main(String[] args) {

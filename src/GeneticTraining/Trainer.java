@@ -2,6 +2,12 @@ package GeneticTraining;
 
 import java.util.Arrays;
 
+/**
+ * This class is responsible for initiating the training of the algorithm
+ *
+ * @Author Jonathan Xu
+ * @Since 2019-05-01
+ */
 public class Trainer {
 
   public static void main(String[] args) {
@@ -27,6 +33,10 @@ public class Trainer {
     }
   }
 
+  /**
+   * Displays the training results
+   * @param pop The population to print
+   */
   public static void printPopulation(Population pop){
     System.out.println("---------------------------------------------------------");
     for(int i = 0; i < pop.getPersonalities().length; i++){

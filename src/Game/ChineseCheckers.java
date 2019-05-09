@@ -58,10 +58,12 @@ public class ChineseCheckers {
 
     // Adjusts depth perception over time (3,2,1)
     // Plans ahead for fewer steps when there are more players due to increased chaos
-    if(playersRemaining < 4){
-      depthLayer = 3 - moves % 3;
-    } else {
+    if(playersRemaining >= 5 && moves > 6){
+      depthLayer = 1;
+    } else if(playersRemaining >= 3 && moves > 8){
       depthLayer = 2 - moves % 2;
+    } else {
+      depthLayer = 3 - moves % 3;
     }
 
     if (moves == 0) { // Default open move right

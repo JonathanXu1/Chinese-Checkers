@@ -10,7 +10,7 @@ import java.util.Scanner;
 /**
  * This class is responsible for IO with server
  *
- * @Author
+ * @Author Bryan Zhang, Jonathan Xu, Carol Chen
  * @Since 2019-04-29
  */
 

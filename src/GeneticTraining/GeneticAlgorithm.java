@@ -5,6 +5,13 @@ Hopefully can then train between personalities against others
 */
 package GeneticTraining;
 
+/**
+ * This class is responsible for the creation, mutation and crossover of populations and personalities.
+ *
+ * @author Jonathan Xu
+ * @since 2019-05-01
+ */
+
 public class GeneticAlgorithm{
 
   public static final int POPULATION_SIZE = 8;
@@ -16,10 +23,20 @@ public class GeneticAlgorithm{
 
   public static final String BOARD_INIT = "BOARD 1 0 (9,5) (10,5) (10,6) (11,5) (11,6) (11,7) (12,5) (12,6) (12,7) (12,8)";
 
+  /**
+   * Evolves a population by mutating and crossing its personalities
+   * @param population The population to be evolved.
+   * @return A mutated and crossed population.
+   */
   public Population evolve(Population population){
     return mutatePopulation(crossoverPopulation(population));
   }
 
+  /**
+   * Randomly reorganizes the personalities in a population, except for the elite personality
+   * @param population The population to cross-over
+   * @return crossoverPop The swapped population
+   */
   private Population crossoverPopulation(Population population){
     Population crossoverPop = new Population(POPULATION_SIZE);
     Personality[] newPersonalities = new Personality[POPULATION_SIZE];
@@ -35,6 +52,11 @@ public class GeneticAlgorithm{
     return crossoverPop;
   }
 
+  /**
+   * Mutates a population by mutating its personalities
+   * @param population The population to be mutated
+   * @return mutatePop The mutated population
+   */
   private Population mutatePopulation(Population population){
     Population mutatePop = new Population(POPULATION_SIZE);
     Personality[] newPersonalities = new Personality[POPULATION_SIZE];
@@ -48,7 +70,12 @@ public class GeneticAlgorithm{
     return mutatePop;
   }
 
-  // Randomly mixes the traits from two personalities
+  /**
+   * Crosses over a personality by randomly choosing genes between two personalities
+   * @param p1 Personality 1
+   * @param p2 Personality 2
+   * @return crossover The new personality
+   */
   private Personality crossoverPersonality(Personality p1, Personality p2){
     Personality crossover = new Personality(NUM_GENES);
     double[] newGenes = new double[NUM_GENES];
@@ -63,7 +90,11 @@ public class GeneticAlgorithm{
     return crossover;
   }
 
-  // Randomly swaps traits in the personality for randomness
+  /**
+   * Randomly swaps traits in the personality to discover better genes
+   * @param personality The personality to mutate
+   * @return mutated The muated personality
+   */
   private Personality mutatePersonality(Personality personality){
     Personality mutated = new Personality(NUM_GENES);
     double[] newGenes = new double[NUM_GENES];
@@ -78,7 +109,11 @@ public class GeneticAlgorithm{
     return mutated;
   }
 
-  // Selects outputs random personalities in sorted order
+  /**
+   * Creates a small population with personalities randomly selected from a population
+   * @param pop The reference population
+   * @return tournamentPop The new population
+   */
   private Population selectTourneyPop(Population pop){
     Population tournamentPop = new Population(TOURNAMENT_SELECTION_SIZE);
     Personality[] newPersonalities = new Personality[NUM_GENES];

@@ -12,15 +12,16 @@ import java.util.Arrays;
  * @since 2019-04-24
  */
 public class ChineseCheckers {
-  int depthLayer = 3;
+  int depthLayer;
   int NUM_PLAYERS = 6;
-  int[][] board = new int[26][18];
+   int[][] board = new int[26][18];
   int[][] friendlyPieces = new int[10][2];
   ArrayList<int[]> currentBestMove = new ArrayList<int[]>();
   int moves = 0;
+  int playersRemaining;
   int[][] visited = new int[26][18];
   int[] scoreConstants = new int[0];
-  double[] scoreMultiplier = {1, 1, 3};
+  double[] scoreMultiplier = {0.5, 0.7, 3};
   // Default {1, 1, 3} GMO {0.5, 0.7, 3}
 
   public ChineseCheckers() {
@@ -49,12 +50,17 @@ public class ChineseCheckers {
    */
   public String makeMove(){
     // Displays board
-    //printGrid();
+    printGrid();
 
     String output = "MOVE";
 
     // Adjusts depth perception over time (3,2,1)
-    depthLayer = 3 - moves % 3;
+    // Plans ahead for fewer steps when there are more players due to increased chaos
+    if(playersRemaining < 4){
+      depthLayer = 3 - moves % 3;
+    } else {
+      depthLayer = 2 - moves % 2;
+    }
 
     if (moves == 0) { // Default open move right
       output += "(12,8) (13,8)";
@@ -69,9 +75,9 @@ public class ChineseCheckers {
     moves++;
 
     // Debug info
-    //System.out.println("Board score: " + getScore(0));
-    //System.out.println(output);
-
+    System.out.println("Board score: " + getScore(0));
+    System.out.println(output);
+    System.out.println("Players remaining: " + playersRemaining);
     return(output);
   }
 
@@ -90,7 +96,7 @@ public class ChineseCheckers {
     }
 
     String[] boardInfo = boardMessage.split("\\s*[)] [(]|[)]|[(]\\s*");
-    int playersRemaining = Integer.parseInt(boardInfo[0].split(" ")[1]);
+    playersRemaining = Integer.parseInt(boardInfo[0].split(" ")[1]);
     int piecesProcessed = 0;
 
     String[] pieces = Arrays.copyOfRange(boardInfo, 1, boardInfo.length);
@@ -132,7 +138,7 @@ public class ChineseCheckers {
    */
   private double getScore(int turnNum){
     // TODO: calculate score for area around piece instead
-    double score = 0;
+    double score = 300;
     // Iterate through all friendly pieces
     for (int i = 0; i < friendlyPieces.length; i++) {
       int r = friendlyPieces[i][0]; // Row
@@ -166,7 +172,7 @@ public class ChineseCheckers {
       int horDistanceFromEnd = (int) Math.abs(c - (r + 1.0) / 2);
       // Being closer to the end is good
       // Prioritizes pieces that started at the back, hopefully this will bring a 'flip' move pattern
-      score += (16 - vertDistanceFromEnd) * scoreMultiplier[0];
+      score -= Math.pow(vertDistanceFromEnd, 2 )* scoreMultiplier[0];
       score -= horDistanceFromEnd * 0.5 * scoreMultiplier[1];
       //score += ((16 - vertDistanceFromEnd)*(startRow-8)*3 + (7 - horDistanceFromEnd)) * 1;
       // Being close to friendlies should be scored higher when the piece is closer to the end
